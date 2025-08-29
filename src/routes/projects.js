@@ -88,6 +88,36 @@ router.get('/featured', async (req, res) => {
   }
 });
 
+// @desc    Get project by ID
+// @route   GET /api/projects/id/:id
+// @access  Public
+router.get('/id/:id', async (req, res) => {
+  try {
+    const project = await Project.findOne({ 
+      _id: req.params.id, 
+      isPublished: true 
+    });
+
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: 'Project not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: project
+    });
+  } catch (error) {
+    console.error('Get project by ID error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+});
+
 // @desc    Get project by slug
 // @route   GET /api/projects/:slug
 // @access  Public
