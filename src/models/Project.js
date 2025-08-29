@@ -161,7 +161,6 @@ projectSchema.pre('save', function(next) {
 });
 
 // Index for better query performance
-projectSchema.index({ slug: 1 });
 projectSchema.index({ isFeatured: 1 });
 projectSchema.index({ type: 1 });
 projectSchema.index({ year: 1 });
