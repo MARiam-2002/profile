@@ -68,6 +68,28 @@ const seedProjects = async () => {
           url: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800&h=600&fit=crop',
           public_id: 'portfolio/wanna-meal-cover'
         },
+        gallery: [
+          {
+            url: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800&h=600&fit=crop',
+            public_id: 'portfolio/wanna-meal-1',
+            caption: 'Home Screen - Restaurant Listings'
+          },
+          {
+            url: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&h=600&fit=crop',
+            public_id: 'portfolio/wanna-meal-2',
+            caption: 'Menu Selection Interface'
+          },
+          {
+            url: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&h=600&fit=crop',
+            public_id: 'portfolio/wanna-meal-3',
+            caption: 'Order Tracking System'
+          },
+          {
+            url: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop',
+            public_id: 'portfolio/wanna-meal-4',
+            caption: 'Payment Integration'
+          }
+        ],
         techStack: ['Flutter', 'Dart', 'Firebase', 'Provider', 'Google Maps'],
         role: 'Full Stack Developer',
         year: 2024,
@@ -111,6 +133,23 @@ const seedProjects = async () => {
           url: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800&h=600&fit=crop',
           public_id: 'portfolio/movie-explorer-cover'
         },
+        gallery: [
+          {
+            url: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800&h=600&fit=crop',
+            public_id: 'portfolio/movie-explorer-1',
+            caption: 'Movie Discovery Home'
+          },
+          {
+            url: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=800&h=600&fit=crop',
+            public_id: 'portfolio/movie-explorer-2',
+            caption: 'Detailed Movie Information'
+          },
+          {
+            url: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800&h=600&fit=crop',
+            public_id: 'portfolio/movie-explorer-3',
+            caption: 'Search and Filter Interface'
+          }
+        ],
         techStack: ['Flutter', 'Dart', 'TMDB API', 'Bloc', 'Hive'],
         role: 'Frontend Developer',
         year: 2024,
@@ -154,6 +193,23 @@ const seedProjects = async () => {
           url: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&h=600&fit=crop',
           public_id: 'portfolio/bookly-cover'
         },
+        gallery: [
+          {
+            url: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&h=600&fit=crop',
+            public_id: 'portfolio/bookly-1',
+            caption: 'Book Library Interface'
+          },
+          {
+            url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop',
+            public_id: 'portfolio/bookly-2',
+            caption: 'Reading Progress Tracking'
+          },
+          {
+            url: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&h=600&fit=crop',
+            public_id: 'portfolio/bookly-3',
+            caption: 'Book Recommendations'
+          }
+        ],
         techStack: ['Flutter', 'Dart', 'Firebase', 'Cubit', 'Google Books API'],
         role: 'Full Stack Developer',
         year: 2023,
@@ -197,6 +253,23 @@ const seedProjects = async () => {
           url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=600&fit=crop',
           public_id: 'portfolio/quicknotes-cover'
         },
+        gallery: [
+          {
+            url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=600&fit=crop',
+            public_id: 'portfolio/quicknotes-1',
+            caption: 'Rich Text Editing'
+          },
+          {
+            url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=600&fit=crop',
+            public_id: 'portfolio/quicknotes-2',
+            caption: 'Note Organization'
+          },
+          {
+            url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=600&fit=crop',
+            public_id: 'portfolio/quicknotes-3',
+            caption: 'Cloud Synchronization'
+          }
+        ],
         techStack: ['Flutter', 'Dart', 'SQLite', 'Provider', 'File Picker'],
         role: 'Mobile Developer',
         year: 2023,
@@ -240,6 +313,23 @@ const seedProjects = async () => {
           url: 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=800&h=600&fit=crop',
           public_id: 'portfolio/chatty-cover'
         },
+        gallery: [
+          {
+            url: 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=800&h=600&fit=crop',
+            public_id: 'portfolio/chatty-1',
+            caption: 'Group Chat Interface'
+          },
+          {
+            url: 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=800&h=600&fit=crop',
+            public_id: 'portfolio/chatty-2',
+            caption: 'File Sharing'
+          },
+          {
+            url: 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=800&h=600&fit=crop',
+            public_id: 'portfolio/chatty-3',
+            caption: 'End-to-End Encryption'
+          }
+        ],
         techStack: ['Flutter', 'Dart', 'Firebase', 'WebRTC', 'Provider'],
         role: 'Full Stack Developer',
         year: 2023,

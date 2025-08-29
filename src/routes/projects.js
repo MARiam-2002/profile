@@ -361,23 +361,23 @@ router.delete('/:id', protect, async (req, res) => {
   }
 });
 
-// @desc    Upload project gallery images
+// @desc    Upload multiple gallery images for a project
 // @route   POST /api/projects/:id/gallery
 // @access  Private
-router.post('/:id/gallery', protect, uploadImages, processImagesUpload, async (req, res) => {
+router.post('/:id/gallery', protect, uploadImage.array('images', 10), processImageUpload, async (req, res) => {
   try {
-    if (!req.cloudinaryResults || req.cloudinaryResults.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'No images uploaded'
-      });
-    }
-
     const project = await Project.findById(req.params.id);
     if (!project) {
       return res.status(404).json({
         success: false,
         message: 'Project not found'
+      });
+    }
+
+    if (!req.cloudinaryResults || req.cloudinaryResults.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No images uploaded'
       });
     }
 
@@ -393,12 +393,13 @@ router.post('/:id/gallery', protect, uploadImages, processImagesUpload, async (r
 
     res.json({
       success: true,
+      message: `${newImages.length} images uploaded successfully`,
       data: {
         gallery: project.gallery
       }
     });
   } catch (error) {
-    console.error('Upload gallery error:', error);
+    console.error('Upload gallery images error:', error);
     res.status(500).json({
       success: false,
       message: 'Server error'
@@ -406,11 +407,66 @@ router.post('/:id/gallery', protect, uploadImages, processImagesUpload, async (r
   }
 });
 
-// @desc    Delete gallery image
-// @route   DELETE /api/projects/:id/gallery/:imageId
+// @desc    Update gallery image caption
+// @route   PUT /api/projects/:projectId/gallery/:imageId
 // @access  Private
-router.delete('/:id/gallery/:imageId', protect, async (req, res) => {
+router.put('/:projectId/gallery/:imageId', protect, [
+  body('caption')
+    .optional()
+    .trim()
+    .isLength({ max: 200 })
+    .withMessage('Caption cannot exceed 200 characters')
+], async (req, res) => {
   try {
+    const { caption } = req.body;
+    
+    const project = await Project.findById(req.params.projectId);
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: 'Project not found'
+      });
+    }
+
+    const imageIndex = project.gallery.findIndex(img => img._id.toString() === req.params.imageId);
+    if (imageIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: 'Gallery image not found'
+      });
+    }
+
+    // Update caption
+    project.gallery[imageIndex].caption = caption || '';
+    await project.save();
+
+    res.json({
+      success: true,
+      message: 'Image caption updated successfully',
+      data: {
+        image: project.gallery[imageIndex]
+      }
+    });
+  } catch (error) {
+    console.error('Update image caption error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+});
+
+// @desc    Reorder gallery images
+// @route   PUT /api/projects/:id/gallery/reorder
+// @access  Private
+router.put('/:id/gallery/reorder', protect, [
+  body('imageIds')
+    .isArray()
+    .withMessage('Image IDs must be an array')
+], async (req, res) => {
+  try {
+    const { imageIds } = req.body;
+    
     const project = await Project.findById(req.params.id);
     if (!project) {
       return res.status(404).json({
@@ -419,14 +475,52 @@ router.delete('/:id/gallery/:imageId', protect, async (req, res) => {
       });
     }
 
-    const imageIndex = project.gallery.findIndex(
-      img => img._id.toString() === req.params.imageId
-    );
+    // Reorder gallery based on provided order
+    const reorderedGallery = [];
+    for (const imageId of imageIds) {
+      const image = project.gallery.find(img => img._id.toString() === imageId);
+      if (image) {
+        reorderedGallery.push(image);
+      }
+    }
 
+    project.gallery = reorderedGallery;
+    await project.save();
+
+    res.json({
+      success: true,
+      message: 'Gallery reordered successfully',
+      data: {
+        gallery: project.gallery
+      }
+    });
+  } catch (error) {
+    console.error('Reorder gallery error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+});
+
+// @desc    Delete gallery image
+// @route   DELETE /api/projects/:projectId/gallery/:imageId
+// @access  Private
+router.delete('/:projectId/gallery/:imageId', protect, async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.projectId);
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: 'Project not found'
+      });
+    }
+
+    const imageIndex = project.gallery.findIndex(img => img._id.toString() === req.params.imageId);
     if (imageIndex === -1) {
       return res.status(404).json({
         success: false,
-        message: 'Image not found'
+        message: 'Gallery image not found'
       });
     }
 
@@ -446,7 +540,7 @@ router.delete('/:id/gallery/:imageId', protect, async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Image deleted successfully'
+      message: 'Gallery image deleted successfully'
     });
   } catch (error) {
     console.error('Delete gallery image error:', error);
