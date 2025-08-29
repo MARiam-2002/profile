@@ -575,7 +575,7 @@ router.delete('/:id', protect, async (req, res) => {
 // @desc    Upload multiple gallery images for a project
 // @route   POST /api/projects/:id/gallery
 // @access  Private
-router.post('/:id/gallery', protect, uploadImage.array('images', 10), processImageUpload, async (req, res) => {
+router.post('/:id/gallery', protect, uploadImages, processImagesUpload, async (req, res) => {
   try {
     const project = await Project.findById(req.params.id);
     if (!project) {
