@@ -28,6 +28,9 @@ connectDB();
 // Security middleware
 app.use(helmet());
 
+// Trust proxy - needed for express-rate-limit when behind a reverse proxy
+app.set('trust proxy', 1);
+
 // CORS configuration
 app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
