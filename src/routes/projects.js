@@ -131,7 +131,28 @@ router.post('/', protect, uploadImage, processImageUpload, [
     .isLength({ min: 1, max: 1000 })
     .withMessage('Description is required and cannot exceed 1000 characters'),
   body('techStack')
-    .isArray({ min: 1 })
+    .custom(value => {
+      try {
+        // تحقق مما إذا كانت القيمة مصفوفة بالفعل
+        if (Array.isArray(value)) return true;
+        
+        // محاولة تحليل القيمة كـ JSON
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) && parsed.length >= 1;
+      } catch (error) {
+        // محاولة تحليل القيمة كنص عادي
+        if (typeof value === 'string') {
+          // إزالة الاقتباسات الخارجية إذا وجدت
+          const cleanValue = value.trim().replace(/^\[|\]$/g, '');
+          // تقسيم النص إلى مصفوفة
+          const items = cleanValue.split(',').map(item => 
+            item.trim().replace(/^['"]|['"]$/g, '')
+          ).filter(Boolean);
+          return items.length >= 1;
+        }
+        return false;
+      }
+    })
     .withMessage('At least one technology is required'),
   body('role')
     .trim()
@@ -144,7 +165,28 @@ router.post('/', protect, uploadImage, processImageUpload, [
     .isIn(['mobile', 'web', 'desktop', 'other'])
     .withMessage('Type must be mobile, web, desktop, or other'),
   body('features')
-    .isArray({ min: 1 })
+    .custom(value => {
+      try {
+        // تحقق مما إذا كانت القيمة مصفوفة بالفعل
+        if (Array.isArray(value)) return true;
+        
+        // محاولة تحليل القيمة كـ JSON
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) && parsed.length >= 1;
+      } catch (error) {
+        // محاولة تحليل القيمة كنص عادي
+        if (typeof value === 'string') {
+          // إزالة الاقتباسات الخارجية إذا وجدت
+          const cleanValue = value.trim().replace(/^\[|\]$/g, '');
+          // تقسيم النص إلى مصفوفة
+          const items = cleanValue.split(',').map(item => 
+            item.trim().replace(/^['"]|['"]$/g, '')
+          ).filter(Boolean);
+          return items.length >= 1;
+        }
+        return false;
+      }
+    })
     .withMessage('At least one feature is required')
 ], async (req, res) => {
   try {
@@ -178,6 +220,70 @@ router.post('/', protect, uploadImage, processImageUpload, [
       isFeatured
     } = req.body;
 
+    // معالجة حقل techStack
+    let parsedTechStack = [];
+    try {
+      if (Array.isArray(techStack)) {
+        parsedTechStack = techStack;
+      } else {
+        parsedTechStack = JSON.parse(techStack);
+      }
+    } catch (error) {
+      // إذا فشل التحليل كـ JSON، نعالجه كنص عادي
+      if (typeof techStack === 'string') {
+        const cleanValue = techStack.trim().replace(/^\[|\]$/g, '');
+        parsedTechStack = cleanValue.split(',').map(item => 
+          item.trim().replace(/^['"]|['"]$/g, '')
+        ).filter(Boolean);
+      }
+    }
+
+    // معالجة حقل features
+    let parsedFeatures = [];
+    try {
+      if (Array.isArray(features)) {
+        parsedFeatures = features;
+      } else {
+        parsedFeatures = JSON.parse(features);
+      }
+    } catch (error) {
+      // إذا فشل التحليل كـ JSON، نعالجه كنص عادي
+      if (typeof features === 'string') {
+        const cleanValue = features.trim().replace(/^\[|\]$/g, '');
+        parsedFeatures = cleanValue.split(',').map(item => 
+          item.trim().replace(/^['"]|['"]$/g, '')
+        ).filter(Boolean);
+      }
+    }
+
+    // معالجة الحقول الأخرى
+    let parsedLinks = {};
+    if (links) {
+      try {
+        parsedLinks = typeof links === 'object' ? links : JSON.parse(links);
+      } catch (error) {
+        console.error('Error parsing links:', error);
+      }
+    }
+
+    let parsedStats = {};
+    if (stats) {
+      try {
+        parsedStats = typeof stats === 'object' ? stats : JSON.parse(stats);
+      } catch (error) {
+        console.error('Error parsing stats:', error);
+      }
+    }
+
+    let parsedCaseStudy = {};
+    if (caseStudy) {
+      try {
+        parsedCaseStudy = typeof caseStudy === 'object' ? caseStudy : JSON.parse(caseStudy);
+      } catch (error) {
+        console.error('Error parsing caseStudy:', error);
+      }
+    }
+
     // Create project
     const project = await Project.create({
       title,
@@ -186,14 +292,14 @@ router.post('/', protect, uploadImage, processImageUpload, [
         url: req.cloudinaryResult.url,
         public_id: req.cloudinaryResult.public_id
       },
-      techStack: JSON.parse(techStack),
+      techStack: parsedTechStack,
       role,
       year: parseInt(year),
       type,
-      features: JSON.parse(features),
-      links: links ? JSON.parse(links) : {},
-      stats: stats ? JSON.parse(stats) : {},
-      caseStudy: caseStudy ? JSON.parse(caseStudy) : {},
+      features: parsedFeatures,
+      links: parsedLinks,
+      stats: parsedStats,
+      caseStudy: parsedCaseStudy,
       isFeatured: isFeatured === 'true'
     });
 
@@ -226,7 +332,29 @@ router.put('/:id', protect, uploadImage, processImageUpload, [
     .withMessage('Description cannot exceed 1000 characters'),
   body('techStack')
     .optional()
-    .isArray({ min: 1 })
+    .custom(value => {
+      if (!value) return true; // إذا كانت القيمة غير موجودة، فهي اختيارية
+      try {
+        // تحقق مما إذا كانت القيمة مصفوفة بالفعل
+        if (Array.isArray(value)) return value.length >= 1;
+        
+        // محاولة تحليل القيمة كـ JSON
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) && parsed.length >= 1;
+      } catch (error) {
+        // محاولة تحليل القيمة كنص عادي
+        if (typeof value === 'string') {
+          // إزالة الاقتباسات الخارجية إذا وجدت
+          const cleanValue = value.trim().replace(/^\[|\]$/g, '');
+          // تقسيم النص إلى مصفوفة
+          const items = cleanValue.split(',').map(item => 
+            item.trim().replace(/^['"]|['"]$/g, '')
+          ).filter(Boolean);
+          return items.length >= 1;
+        }
+        return false;
+      }
+    })
     .withMessage('At least one technology is required'),
   body('role')
     .optional()
@@ -243,7 +371,29 @@ router.put('/:id', protect, uploadImage, processImageUpload, [
     .withMessage('Type must be mobile, web, desktop, or other'),
   body('features')
     .optional()
-    .isArray({ min: 1 })
+    .custom(value => {
+      if (!value) return true; // إذا كانت القيمة غير موجودة، فهي اختيارية
+      try {
+        // تحقق مما إذا كانت القيمة مصفوفة بالفعل
+        if (Array.isArray(value)) return value.length >= 1;
+        
+        // محاولة تحليل القيمة كـ JSON
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) && parsed.length >= 1;
+      } catch (error) {
+        // محاولة تحليل القيمة كنص عادي
+        if (typeof value === 'string') {
+          // إزالة الاقتباسات الخارجية إذا وجدت
+          const cleanValue = value.trim().replace(/^\[|\]$/g, '');
+          // تقسيم النص إلى مصفوفة
+          const items = cleanValue.split(',').map(item => 
+            item.trim().replace(/^['"]|['"]$/g, '')
+          ).filter(Boolean);
+          return items.length >= 1;
+        }
+        return false;
+      }
+    })
     .withMessage('At least one feature is required')
 ], async (req, res) => {
   try {
@@ -267,12 +417,73 @@ router.put('/:id', protect, uploadImage, processImageUpload, [
     // Prepare update data
     const updateData = { ...req.body };
     
-    // Handle parsed JSON fields
-    if (req.body.techStack) updateData.techStack = JSON.parse(req.body.techStack);
-    if (req.body.features) updateData.features = JSON.parse(req.body.features);
-    if (req.body.links) updateData.links = JSON.parse(req.body.links);
-    if (req.body.stats) updateData.stats = JSON.parse(req.body.stats);
-    if (req.body.caseStudy) updateData.caseStudy = JSON.parse(req.body.caseStudy);
+    // معالجة حقل techStack
+    if (req.body.techStack) {
+      let parsedTechStack = [];
+      try {
+        if (Array.isArray(req.body.techStack)) {
+          parsedTechStack = req.body.techStack;
+        } else {
+          parsedTechStack = JSON.parse(req.body.techStack);
+        }
+      } catch (error) {
+        // إذا فشل التحليل كـ JSON، نعالجه كنص عادي
+        if (typeof req.body.techStack === 'string') {
+          const cleanValue = req.body.techStack.trim().replace(/^\[|\]$/g, '');
+          parsedTechStack = cleanValue.split(',').map(item => 
+            item.trim().replace(/^['"]|['"]$/g, '')
+          ).filter(Boolean);
+        }
+      }
+      updateData.techStack = parsedTechStack;
+    }
+    
+    // معالجة حقل features
+    if (req.body.features) {
+      let parsedFeatures = [];
+      try {
+        if (Array.isArray(req.body.features)) {
+          parsedFeatures = req.body.features;
+        } else {
+          parsedFeatures = JSON.parse(req.body.features);
+        }
+      } catch (error) {
+        // إذا فشل التحليل كـ JSON، نعالجه كنص عادي
+        if (typeof req.body.features === 'string') {
+          const cleanValue = req.body.features.trim().replace(/^\[|\]$/g, '');
+          parsedFeatures = cleanValue.split(',').map(item => 
+            item.trim().replace(/^['"]|['"]$/g, '')
+          ).filter(Boolean);
+        }
+      }
+      updateData.features = parsedFeatures;
+    }
+    
+    // معالجة الحقول الأخرى
+    if (req.body.links) {
+      try {
+        updateData.links = typeof req.body.links === 'object' ? req.body.links : JSON.parse(req.body.links);
+      } catch (error) {
+        console.error('Error parsing links:', error);
+      }
+    }
+    
+    if (req.body.stats) {
+      try {
+        updateData.stats = typeof req.body.stats === 'object' ? req.body.stats : JSON.parse(req.body.stats);
+      } catch (error) {
+        console.error('Error parsing stats:', error);
+      }
+    }
+    
+    if (req.body.caseStudy) {
+      try {
+        updateData.caseStudy = typeof req.body.caseStudy === 'object' ? req.body.caseStudy : JSON.parse(req.body.caseStudy);
+      } catch (error) {
+        console.error('Error parsing caseStudy:', error);
+      }
+    }
+    
     if (req.body.year) updateData.year = parseInt(req.body.year);
     if (req.body.isFeatured !== undefined) updateData.isFeatured = req.body.isFeatured === 'true';
 
