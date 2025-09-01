@@ -62,8 +62,8 @@ const seedProjects = async () => {
   try {
     const projects = [
       {
-        title: 'Wanna Meal',
-        description: 'A comprehensive food delivery application built with Flutter. Features include user authentication, restaurant listings, menu management, order tracking, and payment integration.',
+        title: 'Wanna Meal (Graduation Project)',
+        description: 'An AI and ML-powered app suggests meals based on your ingredients. Built with MVVM and Cubit, it features AR, EN, dark/light themes, animations, and user interactions through profiles, a community, and chat. It provides detailed meal information with preparation time and instructions.',
         cover: {
           url: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=800&h=600&fit=crop',
           public_id: 'portfolio/wanna-meal-cover'
@@ -119,21 +119,30 @@ const seedProjects = async () => {
             isActive: true
           },
           {
-            key: 'provider',
-            name: 'Provider',
+            key: 'cubit',
+            name: 'Cubit',
             icon: 'package',
             color: '#4285F4',
             category: 'framework',
-            version: '6.x',
+            version: '8.x',
             isActive: true
           },
           {
-            key: 'google-maps',
-            name: 'Google Maps',
-            icon: 'map',
-            color: '#4285F4',
+            key: 'ai-ml',
+            name: 'AI & ML',
+            icon: 'brain',
+            color: '#FF6B6B',
             category: 'service',
-            version: '2.x',
+            version: '1.x',
+            isActive: true
+          },
+          {
+            key: 'ar',
+            name: 'Augmented Reality',
+            icon: 'vr',
+            color: '#9C27B0',
+            category: 'technology',
+            version: '1.x',
             isActive: true
           }
         ],
@@ -142,56 +151,56 @@ const seedProjects = async () => {
         type: 'mobile',
         features: [
           {
-            key: 'auth',
-            title: 'User Authentication',
-            description: 'Secure user authentication and profile management system',
-            icon: 'shield',
-            category: 'security',
-            isHighlighted: true,
-            isActive: true
-          },
-          {
-            key: 'discovery',
-            title: 'Restaurant Discovery',
-            description: 'Advanced restaurant discovery and menu browsing features',
-            icon: 'search',
+            key: 'ai-meal-suggestion',
+            title: 'AI Meal Suggestions',
+            description: 'AI-powered meal recommendations based on available ingredients',
+            icon: 'brain',
             category: 'core',
             isHighlighted: true,
             isActive: true
           },
           {
-            key: 'tracking',
-            title: 'Real-time Tracking',
-            description: 'Real-time order tracking with live updates',
-            icon: 'map-pin',
+            key: 'ar-features',
+            title: 'Augmented Reality',
+            description: 'AR features for enhanced user experience',
+            icon: 'vr',
             category: 'core',
             isHighlighted: true,
             isActive: true
           },
           {
-            key: 'payment',
-            title: 'Payment Integration',
-            description: 'Multiple payment gateway integration',
-            icon: 'credit-card',
-            category: 'integration',
+            key: 'community',
+            title: 'Community Features',
+            description: 'User profiles, community interactions, and chat functionality',
+            icon: 'users',
+            category: 'social',
+            isHighlighted: true,
+            isActive: true
+          },
+          {
+            key: 'themes',
+            title: 'Dark/Light Themes',
+            description: 'Multiple theme support with smooth animations',
+            icon: 'palette',
+            category: 'ui',
             isHighlighted: false,
             isActive: true
           },
           {
-            key: 'notifications',
-            title: 'Push Notifications',
-            description: 'Real-time push notifications for order updates',
-            icon: 'bell',
+            key: 'meal-details',
+            title: 'Detailed Meal Info',
+            description: 'Comprehensive meal information with preparation time and instructions',
+            icon: 'info',
             category: 'core',
             isHighlighted: false,
             isActive: true
           },
           {
-            key: 'offline',
-            title: 'Offline Support',
-            description: 'Offline functionality with local storage',
-            icon: 'wifi-off',
-            category: 'performance',
+            key: 'multilingual',
+            title: 'Multilingual Support',
+            description: 'Arabic and English language support',
+            icon: 'globe',
+            category: 'core',
             isHighlighted: false,
             isActive: true
           }
@@ -199,7 +208,7 @@ const seedProjects = async () => {
         links: [
           {
             key: 'github',
-            url: 'https://github.com/MahmoudAbuelazm/wanna-meal',
+            url: 'https://github.com/Graduation-Project-MRS/Flutter',
             title: 'GitHub Repository',
             description: 'View source code and contribute to the project',
             icon: 'github',
@@ -212,22 +221,6 @@ const seedProjects = async () => {
             description: 'Try the app online',
             icon: 'external-link',
             isActive: true
-          },
-          {
-            key: 'appStore',
-            url: 'https://apps.apple.com/app/wanna-meal/id123456789',
-            title: 'Download on App Store',
-            description: 'Get the app from Apple App Store',
-            icon: 'apple',
-            isActive: true
-          },
-          {
-            key: 'playStore',
-            url: 'https://play.google.com/store/apps/details?id=com.mahmoudabuelazm.wannameal',
-            title: 'Get it on Google Play',
-            description: 'Download from Google Play Store',
-            icon: 'play',
-            isActive: true
           }
         ],
         stats: {
@@ -236,47 +229,47 @@ const seedProjects = async () => {
           users: 1200
         },
         caseStudy: {
-          problem: 'Users needed a reliable and fast food delivery service with real-time tracking and multiple payment options.',
-          solution: 'Developed a Flutter app with Firebase backend, implementing Provider for state management and Google Maps for location services.',
-          architecture: 'MVVM architecture with clean separation of concerns. Used Firebase for backend services including authentication, database, and cloud functions.',
-          stateManagement: 'Provider pattern for state management with multiple providers for user, cart, and order states.',
+          problem: 'Users needed an intelligent meal planning solution that could suggest recipes based on available ingredients and provide detailed cooking instructions.',
+          solution: 'Developed an AI-powered Flutter app using MVVM architecture with Cubit for state management, integrating machine learning for meal suggestions and AR features for enhanced user experience.',
+          architecture: 'MVVM architecture with Cubit state management. Used Firebase for backend services and integrated AI/ML APIs for meal recommendations.',
+          stateManagement: 'Cubit pattern for simpler and more predictable state management compared to Bloc, with separate cubits for user, meals, and community features.',
           challenges: [
             {
-              key: 'real-time-tracking',
-              title: 'Real-time Order Tracking',
-              description: 'Implementing real-time order tracking with live updates across multiple devices',
-              solution: 'Used Firebase Realtime Database with WebSocket connections for instant updates',
+              key: 'ai-integration',
+              title: 'AI & ML Integration',
+              description: 'Integrating AI and machine learning for intelligent meal suggestions',
+              solution: 'Used TensorFlow Lite and custom ML models for ingredient analysis and recipe recommendations',
               difficulty: 'hard',
               category: 'technical',
               isResolved: true
             },
             {
-              key: 'performance-optimization',
-              title: 'Performance Optimization',
-              description: 'Optimizing app performance for large menu lists with thousands of items',
-              solution: 'Implemented lazy loading, pagination, and efficient caching strategies',
-              difficulty: 'medium',
-              category: 'performance',
+              key: 'ar-implementation',
+              title: 'Augmented Reality Features',
+              description: 'Implementing AR features for enhanced user interaction',
+              solution: 'Used ARCore/ARKit integration for immersive cooking experiences',
+              difficulty: 'hard',
+              category: 'technical',
               isResolved: true
             },
             {
-              key: 'offline-handling',
-              title: 'Offline Scenarios',
-              description: 'Handling offline scenarios gracefully with data synchronization',
-              solution: 'Used SQLite for local storage with sync queue for when connection is restored',
+              key: 'multilingual-support',
+              title: 'Multilingual Support',
+              description: 'Supporting both Arabic and English languages with RTL layout',
+              solution: 'Implemented comprehensive localization with proper RTL support and cultural adaptations',
               difficulty: 'medium',
-              category: 'technical',
+              category: 'ui',
               isResolved: true
             }
           ],
-          results: 'Successfully launched with 1500+ downloads and 4.8-star rating. Reduced order processing time by 40%.'
+          results: 'Graduation project successfully completed with advanced AI features, AR integration, and comprehensive multilingual support. Received excellent feedback for innovation and technical complexity.'
         },
         isFeatured: true,
         isPublished: true
       },
       {
         title: 'Movie & TV Explorer',
-        description: 'A movie and TV show discovery app that allows users to browse, search, and get detailed information about movies and TV series.',
+        description: 'App for movie and TV show enthusiasts, featuring detailed info, personalized recommendations, smooth animations, and robust state management with Bloc, clean architecture, and SOLID principles.',
         cover: {
           url: 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800&h=600&fit=crop',
           public_id: 'portfolio/movie-explorer-cover'
@@ -484,7 +477,7 @@ const seedProjects = async () => {
       },
       {
         title: 'Bookly',
-        description: 'A book reading and management app that helps users discover, organize, and track their reading progress.',
+        description: 'Application for viewing different fields, with the ability to read books. It uses the MVVM architecture.',
         cover: {
           url: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&h=600&fit=crop',
           public_id: 'portfolio/bookly-cover'
@@ -620,7 +613,7 @@ const seedProjects = async () => {
       },
       {
         title: 'QuickNotes',
-        description: 'A fast and efficient note-taking app with rich text editing, organization features, and cloud synchronization.',
+        description: 'A note-taking app built with Flutter and Hive for seamless data storage.',
         cover: {
           url: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=600&fit=crop',
           public_id: 'portfolio/quicknotes-cover'
@@ -756,7 +749,7 @@ const seedProjects = async () => {
       },
       {
         title: 'Chatty',
-        description: 'A real-time messaging app with group chat functionality, file sharing, and end-to-end encryption.',
+        description: 'Unlimited conversations with your contacts, ensuring the conversation flows effortlessly.',
         cover: {
           url: 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=800&h=600&fit=crop',
           public_id: 'portfolio/chatty-cover'

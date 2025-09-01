@@ -229,11 +229,13 @@ router.post('/', protect, uploadImage, processImageUpload, [
       });
     }
 
-    if (!req.cloudinaryResult) {
-      return res.status(400).json({
-        success: false,
-        message: 'Project cover image is required'
-      });
+    // Cover image is optional now
+    let coverData = null;
+    if (req.cloudinaryResult) {
+      coverData = {
+        url: req.cloudinaryResult.url,
+        public_id: req.cloudinaryResult.public_id
+      };
     }
 
     const {
@@ -255,27 +257,34 @@ router.post('/', protect, uploadImage, processImageUpload, [
     try {
       if (Array.isArray(techStack)) {
         parsedTechStack = techStack;
-      } else {
-        parsedTechStack = JSON.parse(techStack);
+      } else if (typeof techStack === 'string') {
+        // محاولة تحليل كـ JSON أولاً
+        try {
+          parsedTechStack = JSON.parse(techStack);
+        } catch (jsonError) {
+          // إذا فشل التحليل كـ JSON، نعالجه كنص عادي
+          const cleanValue = techStack.trim().replace(/^\[|\]$/g, '');
+          const items = cleanValue.split(',').map(item => 
+            item.trim().replace(/^['"]|['"]$/g, '')
+          ).filter(Boolean);
+          // تحويل النموذج القديم إلى الجديد
+          parsedTechStack = items.map(item => ({
+            key: item.toLowerCase().replace(/\s+/g, '-'),
+            name: item,
+            icon: `devicon-${item.toLowerCase().replace(/\s+/g, '-')}-plain`,
+            color: '#4285F4',
+            category: 'other',
+            version: '1.x',
+            isActive: true
+          }));
+        }
       }
     } catch (error) {
-      // إذا فشل التحليل كـ JSON، نعالجه كنص عادي (للتوافق مع النموذج القديم)
-      if (typeof techStack === 'string') {
-        const cleanValue = techStack.trim().replace(/^\[|\]$/g, '');
-        const items = cleanValue.split(',').map(item => 
-          item.trim().replace(/^['"]|['"]$/g, '')
-        ).filter(Boolean);
-        // تحويل النموذج القديم إلى الجديد
-        parsedTechStack = items.map(item => ({
-          key: item.toLowerCase().replace(/\s+/g, '-'),
-          name: item,
-          icon: `devicon-${item.toLowerCase().replace(/\s+/g, '-')}-plain`,
-          color: '#4285F4',
-          category: 'other',
-          version: '1.x',
-          isActive: true
-        }));
-      }
+      console.error('Error parsing techStack:', error);
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid techStack format'
+      });
     }
 
     // معالجة حقل features - النموذج الجديد
@@ -283,27 +292,34 @@ router.post('/', protect, uploadImage, processImageUpload, [
     try {
       if (Array.isArray(features)) {
         parsedFeatures = features;
-      } else {
-        parsedFeatures = JSON.parse(features);
+      } else if (typeof features === 'string') {
+        // محاولة تحليل كـ JSON أولاً
+        try {
+          parsedFeatures = JSON.parse(features);
+        } catch (jsonError) {
+          // إذا فشل التحليل كـ JSON، نعالجه كنص عادي
+          const cleanValue = features.trim().replace(/^\[|\]$/g, '');
+          const items = cleanValue.split(',').map(item => 
+            item.trim().replace(/^['"]|['"]$/g, '')
+          ).filter(Boolean);
+          // تحويل النموذج القديم إلى الجديد
+          parsedFeatures = items.map(item => ({
+            key: item.toLowerCase().replace(/\s+/g, '-'),
+            title: item,
+            description: item,
+            icon: 'check',
+            category: 'core',
+            isHighlighted: false,
+            isActive: true
+          }));
+        }
       }
     } catch (error) {
-      // إذا فشل التحليل كـ JSON، نعالجه كنص عادي (للتوافق مع النموذج القديم)
-      if (typeof features === 'string') {
-        const cleanValue = features.trim().replace(/^\[|\]$/g, '');
-        const items = cleanValue.split(',').map(item => 
-          item.trim().replace(/^['"]|['"]$/g, '')
-        ).filter(Boolean);
-        // تحويل النموذج القديم إلى الجديد
-        parsedFeatures = items.map(item => ({
-          key: item.toLowerCase().replace(/\s+/g, '-'),
-          title: item,
-          description: item,
-          icon: 'check',
-          category: 'core',
-          isHighlighted: false,
-          isActive: true
-        }));
-      }
+      console.error('Error parsing features:', error);
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid features format'
+      });
     }
 
     // معالجة حقل links - النموذج الجديد
@@ -349,13 +365,9 @@ router.post('/', protect, uploadImage, processImageUpload, [
     }
 
     // Create project
-    const project = await Project.create({
+    const projectData = {
       title,
       description,
-      cover: {
-        url: req.cloudinaryResult.url,
-        public_id: req.cloudinaryResult.public_id
-      },
       techStack: parsedTechStack,
       role,
       year: parseInt(year),
@@ -365,7 +377,14 @@ router.post('/', protect, uploadImage, processImageUpload, [
       stats: parsedStats,
       caseStudy: parsedCaseStudy,
       isFeatured: isFeatured === 'true'
-    });
+    };
+
+    // Add cover only if provided
+    if (coverData) {
+      projectData.cover = coverData;
+    }
+
+    const project = await Project.create(projectData);
 
     res.status(201).json({
       success: true,
@@ -587,8 +606,8 @@ router.put('/:id', protect, uploadImage, processImageUpload, [
 
     // Handle new cover image
     if (req.cloudinaryResult) {
-      // Delete old cover from Cloudinary
-      if (project.cover.public_id) {
+      // Delete old cover from Cloudinary if exists
+      if (project.cover && project.cover.public_id) {
         try {
           await deleteFromCloudinary(project.cover.public_id);
         } catch (error) {
@@ -635,8 +654,8 @@ router.delete('/:id', protect, async (req, res) => {
       });
     }
 
-    // Delete cover image from Cloudinary
-    if (project.cover.public_id) {
+    // Delete cover image from Cloudinary if exists
+    if (project.cover && project.cover.public_id) {
       try {
         await deleteFromCloudinary(project.cover.public_id);
       } catch (error) {
