@@ -21,11 +21,9 @@ const projectSchema = new mongoose.Schema({
   cover: {
     url: {
       type: String,
-      required: [true, 'Project cover image is required']
     },
     public_id: {
       type: String,
-      required: [true, 'Project cover public ID is required']
     }
   },
   gallery: [{
