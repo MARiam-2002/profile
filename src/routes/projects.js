@@ -27,7 +27,7 @@ router.get('/', async (req, res) => {
 
     if (type) query.type = type;
     if (year) query.year = parseInt(year);
-    if (tech) query.techStack = { $in: [tech] };
+    if (tech) query['techStack.name'] = { $regex: tech, $options: 'i' };
     if (featured === 'true') query.isFeatured = true;
     if (search) {
       query.$or = [
@@ -250,7 +250,7 @@ router.post('/', protect, uploadImage, processImageUpload, [
       isFeatured
     } = req.body;
 
-    // معالجة حقل techStack
+    // معالجة حقل techStack - النموذج الجديد
     let parsedTechStack = [];
     try {
       if (Array.isArray(techStack)) {
@@ -259,16 +259,26 @@ router.post('/', protect, uploadImage, processImageUpload, [
         parsedTechStack = JSON.parse(techStack);
       }
     } catch (error) {
-      // إذا فشل التحليل كـ JSON، نعالجه كنص عادي
+      // إذا فشل التحليل كـ JSON، نعالجه كنص عادي (للتوافق مع النموذج القديم)
       if (typeof techStack === 'string') {
         const cleanValue = techStack.trim().replace(/^\[|\]$/g, '');
-        parsedTechStack = cleanValue.split(',').map(item => 
+        const items = cleanValue.split(',').map(item => 
           item.trim().replace(/^['"]|['"]$/g, '')
         ).filter(Boolean);
+        // تحويل النموذج القديم إلى الجديد
+        parsedTechStack = items.map(item => ({
+          key: item.toLowerCase().replace(/\s+/g, '-'),
+          name: item,
+          icon: `devicon-${item.toLowerCase().replace(/\s+/g, '-')}-plain`,
+          color: '#4285F4',
+          category: 'other',
+          version: '1.x',
+          isActive: true
+        }));
       }
     }
 
-    // معالجة حقل features
+    // معالجة حقل features - النموذج الجديد
     let parsedFeatures = [];
     try {
       if (Array.isArray(features)) {
@@ -277,20 +287,44 @@ router.post('/', protect, uploadImage, processImageUpload, [
         parsedFeatures = JSON.parse(features);
       }
     } catch (error) {
-      // إذا فشل التحليل كـ JSON، نعالجه كنص عادي
+      // إذا فشل التحليل كـ JSON، نعالجه كنص عادي (للتوافق مع النموذج القديم)
       if (typeof features === 'string') {
         const cleanValue = features.trim().replace(/^\[|\]$/g, '');
-        parsedFeatures = cleanValue.split(',').map(item => 
+        const items = cleanValue.split(',').map(item => 
           item.trim().replace(/^['"]|['"]$/g, '')
         ).filter(Boolean);
+        // تحويل النموذج القديم إلى الجديد
+        parsedFeatures = items.map(item => ({
+          key: item.toLowerCase().replace(/\s+/g, '-'),
+          title: item,
+          description: item,
+          icon: 'check',
+          category: 'core',
+          isHighlighted: false,
+          isActive: true
+        }));
       }
     }
 
-    // معالجة الحقول الأخرى
-    let parsedLinks = {};
+    // معالجة حقل links - النموذج الجديد
+    let parsedLinks = [];
     if (links) {
       try {
-        parsedLinks = typeof links === 'object' ? links : JSON.parse(links);
+        if (Array.isArray(links)) {
+          parsedLinks = links;
+        } else if (typeof links === 'object') {
+          // تحويل النموذج القديم (object) إلى الجديد (array)
+          parsedLinks = Object.entries(links).map(([key, url]) => ({
+            key,
+            url,
+            title: key.charAt(0).toUpperCase() + key.slice(1),
+            description: `Link to ${key}`,
+            icon: key === 'github' ? 'github' : 'external-link',
+            isActive: true
+          }));
+        } else {
+          parsedLinks = JSON.parse(links);
+        }
       } catch (error) {
         console.error('Error parsing links:', error);
       }
@@ -447,7 +481,7 @@ router.put('/:id', protect, uploadImage, processImageUpload, [
     // Prepare update data
     const updateData = { ...req.body };
     
-    // معالجة حقل techStack
+    // معالجة حقل techStack - النموذج الجديد
     if (req.body.techStack) {
       let parsedTechStack = [];
       try {
@@ -457,18 +491,28 @@ router.put('/:id', protect, uploadImage, processImageUpload, [
           parsedTechStack = JSON.parse(req.body.techStack);
         }
       } catch (error) {
-        // إذا فشل التحليل كـ JSON، نعالجه كنص عادي
+        // إذا فشل التحليل كـ JSON، نعالجه كنص عادي (للتوافق مع النموذج القديم)
         if (typeof req.body.techStack === 'string') {
           const cleanValue = req.body.techStack.trim().replace(/^\[|\]$/g, '');
-          parsedTechStack = cleanValue.split(',').map(item => 
+          const items = cleanValue.split(',').map(item => 
             item.trim().replace(/^['"]|['"]$/g, '')
           ).filter(Boolean);
+          // تحويل النموذج القديم إلى الجديد
+          parsedTechStack = items.map(item => ({
+            key: item.toLowerCase().replace(/\s+/g, '-'),
+            name: item,
+            icon: `devicon-${item.toLowerCase().replace(/\s+/g, '-')}-plain`,
+            color: '#4285F4',
+            category: 'other',
+            version: '1.x',
+            isActive: true
+          }));
         }
       }
       updateData.techStack = parsedTechStack;
     }
     
-    // معالجة حقل features
+    // معالجة حقل features - النموذج الجديد
     if (req.body.features) {
       let parsedFeatures = [];
       try {
@@ -478,21 +522,45 @@ router.put('/:id', protect, uploadImage, processImageUpload, [
           parsedFeatures = JSON.parse(req.body.features);
         }
       } catch (error) {
-        // إذا فشل التحليل كـ JSON، نعالجه كنص عادي
+        // إذا فشل التحليل كـ JSON، نعالجه كنص عادي (للتوافق مع النموذج القديم)
         if (typeof req.body.features === 'string') {
           const cleanValue = req.body.features.trim().replace(/^\[|\]$/g, '');
-          parsedFeatures = cleanValue.split(',').map(item => 
+          const items = cleanValue.split(',').map(item => 
             item.trim().replace(/^['"]|['"]$/g, '')
           ).filter(Boolean);
+          // تحويل النموذج القديم إلى الجديد
+          parsedFeatures = items.map(item => ({
+            key: item.toLowerCase().replace(/\s+/g, '-'),
+            title: item,
+            description: item,
+            icon: 'check',
+            category: 'core',
+            isHighlighted: false,
+            isActive: true
+          }));
         }
       }
       updateData.features = parsedFeatures;
     }
     
-    // معالجة الحقول الأخرى
+    // معالجة حقل links - النموذج الجديد
     if (req.body.links) {
       try {
-        updateData.links = typeof req.body.links === 'object' ? req.body.links : JSON.parse(req.body.links);
+        if (Array.isArray(req.body.links)) {
+          updateData.links = req.body.links;
+        } else if (typeof req.body.links === 'object') {
+          // تحويل النموذج القديم (object) إلى الجديد (array)
+          updateData.links = Object.entries(req.body.links).map(([key, url]) => ({
+            key,
+            url,
+            title: key.charAt(0).toUpperCase() + key.slice(1),
+            description: `Link to ${key}`,
+            icon: key === 'github' ? 'github' : 'external-link',
+            isActive: true
+          }));
+        } else {
+          updateData.links = JSON.parse(req.body.links);
+        }
       } catch (error) {
         console.error('Error parsing links:', error);
       }

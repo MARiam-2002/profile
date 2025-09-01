@@ -90,22 +90,146 @@ const seedProjects = async () => {
             caption: 'Payment Integration'
           }
         ],
-        techStack: ['Flutter', 'Dart', 'Firebase', 'Provider', 'Google Maps'],
+        techStack: [
+          {
+            key: 'flutter',
+            name: 'Flutter',
+            icon: 'devicon-flutter-plain',
+            color: '#02569B',
+            category: 'framework',
+            version: '3.x',
+            isActive: true
+          },
+          {
+            key: 'dart',
+            name: 'Dart',
+            icon: 'devicon-dart-plain',
+            color: '#00D4AA',
+            category: 'language',
+            version: '3.x',
+            isActive: true
+          },
+          {
+            key: 'firebase',
+            name: 'Firebase',
+            icon: 'devicon-firebase-plain',
+            color: '#FFCA28',
+            category: 'service',
+            version: '10.x',
+            isActive: true
+          },
+          {
+            key: 'provider',
+            name: 'Provider',
+            icon: 'package',
+            color: '#4285F4',
+            category: 'framework',
+            version: '6.x',
+            isActive: true
+          },
+          {
+            key: 'google-maps',
+            name: 'Google Maps',
+            icon: 'map',
+            color: '#4285F4',
+            category: 'service',
+            version: '2.x',
+            isActive: true
+          }
+        ],
         role: 'Full Stack Developer',
         year: 2024,
         type: 'mobile',
         features: [
-          'User authentication and profile management',
-          'Restaurant discovery and menu browsing',
-          'Real-time order tracking',
-          'Payment integration with multiple gateways',
-          'Push notifications for order updates',
-          'Offline support with local storage'
+          {
+            key: 'auth',
+            title: 'User Authentication',
+            description: 'Secure user authentication and profile management system',
+            icon: 'shield',
+            category: 'security',
+            isHighlighted: true,
+            isActive: true
+          },
+          {
+            key: 'discovery',
+            title: 'Restaurant Discovery',
+            description: 'Advanced restaurant discovery and menu browsing features',
+            icon: 'search',
+            category: 'core',
+            isHighlighted: true,
+            isActive: true
+          },
+          {
+            key: 'tracking',
+            title: 'Real-time Tracking',
+            description: 'Real-time order tracking with live updates',
+            icon: 'map-pin',
+            category: 'core',
+            isHighlighted: true,
+            isActive: true
+          },
+          {
+            key: 'payment',
+            title: 'Payment Integration',
+            description: 'Multiple payment gateway integration',
+            icon: 'credit-card',
+            category: 'integration',
+            isHighlighted: false,
+            isActive: true
+          },
+          {
+            key: 'notifications',
+            title: 'Push Notifications',
+            description: 'Real-time push notifications for order updates',
+            icon: 'bell',
+            category: 'core',
+            isHighlighted: false,
+            isActive: true
+          },
+          {
+            key: 'offline',
+            title: 'Offline Support',
+            description: 'Offline functionality with local storage',
+            icon: 'wifi-off',
+            category: 'performance',
+            isHighlighted: false,
+            isActive: true
+          }
         ],
-        links: {
-          github: 'https://github.com/MahmoudAbuelazm/wanna-meal',
-          demo: 'https://wanna-meal-demo.web.app'
-        },
+        links: [
+          {
+            key: 'github',
+            url: 'https://github.com/MahmoudAbuelazm/wanna-meal',
+            title: 'GitHub Repository',
+            description: 'View source code and contribute to the project',
+            icon: 'github',
+            isActive: true
+          },
+          {
+            key: 'demo',
+            url: 'https://wanna-meal-demo.web.app',
+            title: 'Live Demo',
+            description: 'Try the app online',
+            icon: 'external-link',
+            isActive: true
+          },
+          {
+            key: 'appStore',
+            url: 'https://apps.apple.com/app/wanna-meal/id123456789',
+            title: 'Download on App Store',
+            description: 'Get the app from Apple App Store',
+            icon: 'apple',
+            isActive: true
+          },
+          {
+            key: 'playStore',
+            url: 'https://play.google.com/store/apps/details?id=com.mahmoudabuelazm.wannameal',
+            title: 'Get it on Google Play',
+            description: 'Download from Google Play Store',
+            icon: 'play',
+            isActive: true
+          }
+        ],
         stats: {
           downloads: 1500,
           rating: 4.8,
@@ -117,9 +241,33 @@ const seedProjects = async () => {
           architecture: 'MVVM architecture with clean separation of concerns. Used Firebase for backend services including authentication, database, and cloud functions.',
           stateManagement: 'Provider pattern for state management with multiple providers for user, cart, and order states.',
           challenges: [
-            'Implementing real-time order tracking',
-            'Optimizing app performance for large menu lists',
-            'Handling offline scenarios gracefully'
+            {
+              key: 'real-time-tracking',
+              title: 'Real-time Order Tracking',
+              description: 'Implementing real-time order tracking with live updates across multiple devices',
+              solution: 'Used Firebase Realtime Database with WebSocket connections for instant updates',
+              difficulty: 'hard',
+              category: 'technical',
+              isResolved: true
+            },
+            {
+              key: 'performance-optimization',
+              title: 'Performance Optimization',
+              description: 'Optimizing app performance for large menu lists with thousands of items',
+              solution: 'Implemented lazy loading, pagination, and efficient caching strategies',
+              difficulty: 'medium',
+              category: 'performance',
+              isResolved: true
+            },
+            {
+              key: 'offline-handling',
+              title: 'Offline Scenarios',
+              description: 'Handling offline scenarios gracefully with data synchronization',
+              solution: 'Used SQLite for local storage with sync queue for when connection is restored',
+              difficulty: 'medium',
+              category: 'technical',
+              isResolved: true
+            }
           ],
           results: 'Successfully launched with 1500+ downloads and 4.8-star rating. Reduced order processing time by 40%.'
         },
@@ -150,22 +298,146 @@ const seedProjects = async () => {
             caption: 'Search and Filter Interface'
           }
         ],
-        techStack: ['Flutter', 'Dart', 'TMDB API', 'Bloc', 'Hive'],
+        techStack: [
+          {
+            key: 'flutter',
+            name: 'Flutter',
+            icon: 'devicon-flutter-plain',
+            color: '#02569B',
+            category: 'framework',
+            version: '3.x',
+            isActive: true
+          },
+          {
+            key: 'dart',
+            name: 'Dart',
+            icon: 'devicon-dart-plain',
+            color: '#00D4AA',
+            category: 'language',
+            version: '3.x',
+            isActive: true
+          },
+          {
+            key: 'tmdb-api',
+            name: 'TMDB API',
+            icon: 'database',
+            color: '#01D277',
+            category: 'service',
+            version: '3.x',
+            isActive: true
+          },
+          {
+            key: 'bloc',
+            name: 'Bloc',
+            icon: 'layers',
+            color: '#4285F4',
+            category: 'framework',
+            version: '8.x',
+            isActive: true
+          },
+          {
+            key: 'hive',
+            name: 'Hive',
+            icon: 'database',
+            color: '#FF6B35',
+            category: 'database',
+            version: '2.x',
+            isActive: true
+          }
+        ],
         role: 'Frontend Developer',
         year: 2024,
         type: 'mobile',
         features: [
-          'Browse movies and TV shows by categories',
-          'Search functionality with filters',
-          'Detailed information and cast details',
-          'Watchlist and favorites management',
-          'Offline data storage',
-          'Dark/Light theme support'
+          {
+            key: 'browse',
+            title: 'Browse Movies & TV Shows',
+            description: 'Browse movies and TV shows by categories with advanced filtering',
+            icon: 'film',
+            category: 'core',
+            isHighlighted: true,
+            isActive: true
+          },
+          {
+            key: 'search',
+            title: 'Advanced Search',
+            description: 'Search functionality with multiple filters and sorting options',
+            icon: 'search',
+            category: 'core',
+            isHighlighted: true,
+            isActive: true
+          },
+          {
+            key: 'details',
+            title: 'Detailed Information',
+            description: 'Comprehensive movie and cast information with ratings',
+            icon: 'info',
+            category: 'core',
+            isHighlighted: false,
+            isActive: true
+          },
+          {
+            key: 'watchlist',
+            title: 'Watchlist Management',
+            description: 'Personal watchlist and favorites management system',
+            icon: 'bookmark',
+            category: 'core',
+            isHighlighted: false,
+            isActive: true
+          },
+          {
+            key: 'offline',
+            title: 'Offline Storage',
+            description: 'Offline data storage for browsing without internet',
+            icon: 'wifi-off',
+            category: 'performance',
+            isHighlighted: false,
+            isActive: true
+          },
+          {
+            key: 'theme',
+            title: 'Dark/Light Theme',
+            description: 'Customizable dark and light theme support',
+            icon: 'moon',
+            category: 'ui',
+            isHighlighted: false,
+            isActive: true
+          }
         ],
-        links: {
-          github: 'https://github.com/MahmoudAbuelazm/movie-explorer',
-          demo: 'https://movie-explorer-demo.web.app'
-        },
+        links: [
+          {
+            key: 'github',
+            url: 'https://github.com/MahmoudAbuelazm/movie-explorer',
+            title: 'GitHub Repository',
+            description: 'View source code and contribute to the project',
+            icon: 'github',
+            isActive: true
+          },
+          {
+            key: 'demo',
+            url: 'https://movie-explorer-demo.web.app',
+            title: 'Live Demo',
+            description: 'Try the app online',
+            icon: 'external-link',
+            isActive: true
+          },
+          {
+            key: 'appStore',
+            url: 'https://apps.apple.com/app/movie-explorer/id987654321',
+            title: 'Download on App Store',
+            description: 'Get the app from Apple App Store',
+            icon: 'apple',
+            isActive: true
+          },
+          {
+            key: 'playStore',
+            url: 'https://play.google.com/store/apps/details?id=com.mahmoudabuelazm.movieexplorer',
+            title: 'Get it on Google Play',
+            description: 'Download from Google Play Store',
+            icon: 'play',
+            isActive: true
+          }
+        ],
         stats: {
           downloads: 800,
           rating: 4.6,
@@ -177,9 +449,33 @@ const seedProjects = async () => {
           architecture: 'Clean architecture with Bloc pattern. Used TMDB API for data and Hive for local storage.',
           stateManagement: 'Bloc pattern with separate blocs for movies, TV shows, and user preferences.',
           challenges: [
-            'Managing complex state with multiple data sources',
-            'Implementing efficient search and filtering',
-            'Optimizing image loading and caching'
+            {
+              key: 'state-management',
+              title: 'Complex State Management',
+              description: 'Managing complex state with multiple data sources and real-time updates',
+              solution: 'Implemented Bloc pattern with separate blocs for different data types',
+              difficulty: 'hard',
+              category: 'technical',
+              isResolved: true
+            },
+            {
+              key: 'search-filtering',
+              title: 'Efficient Search & Filtering',
+              description: 'Implementing efficient search and filtering with large datasets',
+              solution: 'Used debounced search with indexed queries and optimized filtering algorithms',
+              difficulty: 'medium',
+              category: 'performance',
+              isResolved: true
+            },
+            {
+              key: 'image-caching',
+              title: 'Image Loading & Caching',
+              description: 'Optimizing image loading and caching for better performance',
+              solution: 'Implemented custom image caching with lazy loading and progressive loading',
+              difficulty: 'medium',
+              category: 'performance',
+              isResolved: true
+            }
           ],
           results: 'App launched with 800+ downloads and 4.6-star rating. Users praised the smooth UI and offline functionality.'
         },
@@ -210,7 +506,53 @@ const seedProjects = async () => {
             caption: 'Book Recommendations'
           }
         ],
-        techStack: ['Flutter', 'Dart', 'Firebase', 'Cubit', 'Google Books API'],
+        techStack: [
+          {
+            key: 'flutter',
+            name: 'Flutter',
+            icon: 'devicon-flutter-plain',
+            color: '#02569B',
+            category: 'framework',
+            version: '3.x',
+            isActive: true
+          },
+          {
+            key: 'dart',
+            name: 'Dart',
+            icon: 'devicon-dart-plain',
+            color: '#00D4AA',
+            category: 'language',
+            version: '3.x',
+            isActive: true
+          },
+          {
+            key: 'firebase',
+            name: 'Firebase',
+            icon: 'devicon-firebase-plain',
+            color: '#FFCA28',
+            category: 'service',
+            version: '10.x',
+            isActive: true
+          },
+          {
+            key: 'cubit',
+            name: 'Cubit',
+            icon: 'layers',
+            color: '#4285F4',
+            category: 'framework',
+            version: '8.x',
+            isActive: true
+          },
+          {
+            key: 'google-books-api',
+            name: 'Google Books API',
+            icon: 'book',
+            color: '#4285F4',
+            category: 'service',
+            version: '1.x',
+            isActive: true
+          }
+        ],
         role: 'Full Stack Developer',
         year: 2023,
         type: 'mobile',
@@ -222,10 +564,40 @@ const seedProjects = async () => {
           'Social features and recommendations',
           'Cross-platform synchronization'
         ],
-        links: {
-          github: 'https://github.com/MahmoudAbuelazm/bookly',
-          demo: 'https://bookly-demo.web.app'
-        },
+        links: [
+          {
+            key: 'github',
+            url: 'https://github.com/MahmoudAbuelazm/bookly',
+            title: 'GitHub Repository',
+            description: 'View source code and contribute to the project',
+            icon: 'github',
+            isActive: true
+          },
+          {
+            key: 'demo',
+            url: 'https://bookly-demo.web.app',
+            title: 'Live Demo',
+            description: 'Try the app online',
+            icon: 'external-link',
+            isActive: true
+          },
+          {
+            key: 'appStore',
+            url: 'https://apps.apple.com/app/bookly/id456789123',
+            title: 'Download on App Store',
+            description: 'Get the app from Apple App Store',
+            icon: 'apple',
+            isActive: true
+          },
+          {
+            key: 'playStore',
+            url: 'https://play.google.com/store/apps/details?id=com.mahmoudabuelazm.bookly',
+            title: 'Get it on Google Play',
+            description: 'Download from Google Play Store',
+            icon: 'play',
+            isActive: true
+          }
+        ],
         stats: {
           downloads: 1200,
           rating: 4.7,
@@ -270,7 +642,53 @@ const seedProjects = async () => {
             caption: 'Cloud Synchronization'
           }
         ],
-        techStack: ['Flutter', 'Dart', 'SQLite', 'Provider', 'File Picker'],
+        techStack: [
+          {
+            key: 'flutter',
+            name: 'Flutter',
+            icon: 'devicon-flutter-plain',
+            color: '#02569B',
+            category: 'framework',
+            version: '3.x',
+            isActive: true
+          },
+          {
+            key: 'dart',
+            name: 'Dart',
+            icon: 'devicon-dart-plain',
+            color: '#00D4AA',
+            category: 'language',
+            version: '3.x',
+            isActive: true
+          },
+          {
+            key: 'sqlite',
+            name: 'SQLite',
+            icon: 'database',
+            color: '#003B57',
+            category: 'database',
+            version: '3.x',
+            isActive: true
+          },
+          {
+            key: 'provider',
+            name: 'Provider',
+            icon: 'package',
+            color: '#4285F4',
+            category: 'framework',
+            version: '6.x',
+            isActive: true
+          },
+          {
+            key: 'file-picker',
+            name: 'File Picker',
+            icon: 'folder',
+            color: '#FF6B35',
+            category: 'tool',
+            version: '5.x',
+            isActive: true
+          }
+        ],
         role: 'Mobile Developer',
         year: 2023,
         type: 'mobile',
@@ -282,10 +700,40 @@ const seedProjects = async () => {
           'Offline-first design',
           'Export and sharing options'
         ],
-        links: {
-          github: 'https://github.com/MahmoudAbuelazm/quicknotes',
-          demo: 'https://quicknotes-demo.web.app'
-        },
+        links: [
+          {
+            key: 'github',
+            url: 'https://github.com/MahmoudAbuelazm/quicknotes',
+            title: 'GitHub Repository',
+            description: 'View source code and contribute to the project',
+            icon: 'github',
+            isActive: true
+          },
+          {
+            key: 'demo',
+            url: 'https://quicknotes-demo.web.app',
+            title: 'Live Demo',
+            description: 'Try the app online',
+            icon: 'external-link',
+            isActive: true
+          },
+          {
+            key: 'appStore',
+            url: 'https://apps.apple.com/app/quicknotes/id789123456',
+            title: 'Download on App Store',
+            description: 'Get the app from Apple App Store',
+            icon: 'apple',
+            isActive: true
+          },
+          {
+            key: 'playStore',
+            url: 'https://play.google.com/store/apps/details?id=com.mahmoudabuelazm.quicknotes',
+            title: 'Get it on Google Play',
+            description: 'Download from Google Play Store',
+            icon: 'play',
+            isActive: true
+          }
+        ],
         stats: {
           downloads: 2000,
           rating: 4.5,
@@ -330,7 +778,53 @@ const seedProjects = async () => {
             caption: 'End-to-End Encryption'
           }
         ],
-        techStack: ['Flutter', 'Dart', 'Firebase', 'WebRTC', 'Provider'],
+        techStack: [
+          {
+            key: 'flutter',
+            name: 'Flutter',
+            icon: 'devicon-flutter-plain',
+            color: '#02569B',
+            category: 'framework',
+            version: '3.x',
+            isActive: true
+          },
+          {
+            key: 'dart',
+            name: 'Dart',
+            icon: 'devicon-dart-plain',
+            color: '#00D4AA',
+            category: 'language',
+            version: '3.x',
+            isActive: true
+          },
+          {
+            key: 'firebase',
+            name: 'Firebase',
+            icon: 'devicon-firebase-plain',
+            color: '#FFCA28',
+            category: 'service',
+            version: '10.x',
+            isActive: true
+          },
+          {
+            key: 'webrtc',
+            name: 'WebRTC',
+            icon: 'video',
+            color: '#4285F4',
+            category: 'service',
+            version: '1.x',
+            isActive: true
+          },
+          {
+            key: 'provider',
+            name: 'Provider',
+            icon: 'package',
+            color: '#4285F4',
+            category: 'framework',
+            version: '6.x',
+            isActive: true
+          }
+        ],
         role: 'Full Stack Developer',
         year: 2023,
         type: 'mobile',
@@ -342,10 +836,40 @@ const seedProjects = async () => {
           'Message encryption',
           'Push notifications'
         ],
-        links: {
-          github: 'https://github.com/MahmoudAbuelazm/chatty',
-          demo: 'https://chatty-demo.web.app'
-        },
+        links: [
+          {
+            key: 'github',
+            url: 'https://github.com/MahmoudAbuelazm/chatty',
+            title: 'GitHub Repository',
+            description: 'View source code and contribute to the project',
+            icon: 'github',
+            isActive: true
+          },
+          {
+            key: 'demo',
+            url: 'https://chatty-demo.web.app',
+            title: 'Live Demo',
+            description: 'Try the app online',
+            icon: 'external-link',
+            isActive: true
+          },
+          {
+            key: 'appStore',
+            url: 'https://apps.apple.com/app/chatty/id321654987',
+            title: 'Download on App Store',
+            description: 'Get the app from Apple App Store',
+            icon: 'apple',
+            isActive: true
+          },
+          {
+            key: 'playStore',
+            url: 'https://play.google.com/store/apps/details?id=com.mahmoudabuelazm.chatty',
+            title: 'Get it on Google Play',
+            description: 'Download from Google Play Store',
+            icon: 'play',
+            isActive: true
+          }
+        ],
         stats: {
           downloads: 3000,
           rating: 4.4,
