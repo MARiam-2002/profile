@@ -229,12 +229,12 @@ router.post('/', protect, uploadImage, processImageUpload, [
       });
     }
 
-    if (!req.cloudinaryResult) {
-      return res.status(400).json({
-        success: false,
-        message: 'Project cover image is required'
-      });
-    }
+    // if (!req.cloudinaryResult) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: 'Project cover image is required'
+    //   });
+    // }
 
     const {
       title,
