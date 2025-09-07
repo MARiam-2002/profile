@@ -32,8 +32,8 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
-// Middleware to handle single image upload
-export const uploadImage = upload.single('image');
+// Middleware to handle single image upload (optional)
+export const uploadImage = upload.single('cover');
 
 // Middleware to handle multiple image uploads
 export const uploadImages = upload.array('images', 10); // Max 10 images

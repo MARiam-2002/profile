@@ -5,6 +5,33 @@ import { protect } from '../middleware/auth.js';
 import { uploadImage, uploadImages, processImageUpload, processImagesUpload } from '../middleware/upload.js';
 import { deleteFromCloudinary } from '../config/cloudinary.js';
 
+// دالة لتبسيط البيانات - تقبل قوائم بسيطة وتحولها للشكل المطلوب
+const simplifyData = (data) => {
+  if (!data) return [];
+  
+  // إذا كانت مصفوفة بالفعل، ارجعها كما هي
+  if (Array.isArray(data)) return data;
+  
+  // إذا كانت نص، حاول تحليله كـ JSON
+  if (typeof data === 'string') {
+    try {
+      return JSON.parse(data);
+    } catch (error) {
+      // إذا فشل، عالجها كقائمة بسيطة
+      const items = data.split(',').map(item => item.trim()).filter(Boolean);
+      return items.map(item => ({
+        key: item.toLowerCase().replace(/\s+/g, '-'),
+        name: item,
+        icon: 'check',
+        category: 'other',
+        isActive: true
+      }));
+    }
+  }
+  
+  return [];
+};
+
 const router = express.Router();
 
 // @desc    Get all projects
@@ -151,7 +178,7 @@ router.get('/:slug', async (req, res) => {
 // @desc    Create new project
 // @route   POST /api/projects
 // @access  Private
-router.post('/', protect, uploadImage, processImageUpload, [
+router.post('/', protect, [
   body('title')
     .trim()
     .isLength({ min: 1, max: 100 })
@@ -252,115 +279,63 @@ router.post('/', protect, uploadImage, processImageUpload, [
       isFeatured
     } = req.body;
 
-    // معالجة حقل techStack - النموذج الجديد
-    let parsedTechStack = [];
-    try {
-      if (Array.isArray(techStack)) {
-        parsedTechStack = techStack;
-      } else if (typeof techStack === 'string') {
-        // محاولة تحليل كـ JSON أولاً
-        try {
-          parsedTechStack = JSON.parse(techStack);
-        } catch (jsonError) {
-          // إذا فشل التحليل كـ JSON، نعالجه كنص عادي
-          const cleanValue = techStack.trim().replace(/^\[|\]$/g, '');
-          const items = cleanValue.split(',').map(item => 
-            item.trim().replace(/^['"]|['"]$/g, '')
-          ).filter(Boolean);
-          // تحويل النموذج القديم إلى الجديد
-          parsedTechStack = items.map(item => ({
-            key: item.toLowerCase().replace(/\s+/g, '-'),
-            name: item,
-            icon: `devicon-${item.toLowerCase().replace(/\s+/g, '-')}-plain`,
-            color: '#4285F4',
-            category: 'other',
-            version: '1.x',
-            isActive: true
-          }));
-        }
-      }
-    } catch (error) {
-      console.error('Error parsing techStack:', error);
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid techStack format'
-      });
-    }
+    // معالجة حقل techStack - مبسطة
+    const parsedTechStack = simplifyData(techStack);
 
-    // معالجة حقل features - النموذج الجديد
-    let parsedFeatures = [];
-    try {
-      if (Array.isArray(features)) {
-        parsedFeatures = features;
-      } else if (typeof features === 'string') {
-        // محاولة تحليل كـ JSON أولاً
-        try {
-          parsedFeatures = JSON.parse(features);
-        } catch (jsonError) {
-          // إذا فشل التحليل كـ JSON، نعالجه كنص عادي
-          const cleanValue = features.trim().replace(/^\[|\]$/g, '');
-          const items = cleanValue.split(',').map(item => 
-            item.trim().replace(/^['"]|['"]$/g, '')
-          ).filter(Boolean);
-          // تحويل النموذج القديم إلى الجديد
-          parsedFeatures = items.map(item => ({
-            key: item.toLowerCase().replace(/\s+/g, '-'),
-            title: item,
-            description: item,
-            icon: 'check',
-            category: 'core',
-            isHighlighted: false,
-            isActive: true
-          }));
-        }
-      }
-    } catch (error) {
-      console.error('Error parsing features:', error);
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid features format'
-      });
-    }
+    // معالجة حقل features - مبسطة
+    const parsedFeatures = simplifyData(features);
 
-    // معالجة حقل links - النموذج الجديد
+    // معالجة حقل links - مبسطة
     let parsedLinks = [];
     if (links) {
-      try {
-        if (Array.isArray(links)) {
-          parsedLinks = links;
-        } else if (typeof links === 'object') {
-          // تحويل النموذج القديم (object) إلى الجديد (array)
-          parsedLinks = Object.entries(links).map(([key, url]) => ({
-            key,
-            url,
-            title: key.charAt(0).toUpperCase() + key.slice(1),
-            description: `Link to ${key}`,
-            icon: key === 'github' ? 'github' : 'external-link',
-            isActive: true
-          }));
-        } else {
+      if (Array.isArray(links)) {
+        parsedLinks = links;
+      } else if (typeof links === 'object') {
+        // تحويل النموذج القديم (object) إلى الجديد (array)
+        parsedLinks = Object.entries(links).map(([key, url]) => ({
+          key,
+          url,
+          title: key.charAt(0).toUpperCase() + key.slice(1),
+          description: `Link to ${key}`,
+          icon: key === 'github' ? 'github' : 'external-link',
+          isActive: true
+        }));
+      } else {
+        try {
           parsedLinks = JSON.parse(links);
+        } catch (error) {
+          console.error('Error parsing links:', error);
         }
-      } catch (error) {
-        console.error('Error parsing links:', error);
       }
     }
 
+    // معالجة stats - مبسطة
     let parsedStats = {};
     if (stats) {
-      try {
-        parsedStats = typeof stats === 'object' ? stats : JSON.parse(stats);
-      } catch (error) {
-        console.error('Error parsing stats:', error);
+      if (typeof stats === 'object') {
+        parsedStats = stats;
+      } else {
+        try {
+          parsedStats = JSON.parse(stats);
+        } catch (error) {
+          // إذا فشل، استخدم قيم افتراضية
+          parsedStats = { downloads: 0, rating: 0, users: 0 };
+        }
       }
     }
 
+    // معالجة caseStudy - مبسطة
     let parsedCaseStudy = {};
     if (caseStudy) {
-      try {
-        parsedCaseStudy = typeof caseStudy === 'object' ? caseStudy : JSON.parse(caseStudy);
-      } catch (error) {
-        console.error('Error parsing caseStudy:', error);
+      if (typeof caseStudy === 'object') {
+        parsedCaseStudy = caseStudy;
+      } else {
+        try {
+          parsedCaseStudy = JSON.parse(caseStudy);
+        } catch (error) {
+          // إذا فشل، استخدم قيم افتراضية
+          parsedCaseStudy = { challenges: [] };
+        }
       }
     }
 
