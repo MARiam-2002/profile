@@ -31,11 +31,11 @@ const projectSchema = new mongoose.Schema({
   gallery: [{
     url: {
       type: String,
-      required: true
+      required: false
     },
     public_id: {
       type: String,
-      required: true
+      required: false
     },
     caption: {
       type: String,
