@@ -59,13 +59,34 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Static files
 app.use('/uploads', express.static('uploads'));
 
-// Health check endpoint
+// Health check endpoint (no database required)
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     message: 'Portfolio API is running',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    mongoConfigured: !!process.env.MONGODB_URI
   });
+});
+
+// Database health check endpoint
+app.get('/api/health/db', async (req, res) => {
+  try {
+    await connectDB();
+    res.json({ 
+      status: 'OK', 
+      message: 'Database connection successful',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      status: 'ERROR', 
+      message: 'Database connection failed',
+      error: process.env.NODE_ENV === 'production' ? 'Internal server error' : error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 // API routes
