@@ -17,13 +17,11 @@ export default async function handler(req, res) {
     return res.status(500).json({
       success: false,
       message: 'Database connection failed',
-      error: errorMessage, // Always show error for now to debug
-      debug: {
+      error: process.env.NODE_ENV === 'production' ? 'Internal server error' : errorMessage,
+      debug: process.env.NODE_ENV === 'production' ? undefined : {
         mongoUriExists: !!process.env.MONGODB_URI,
-        mongoUriPrefix: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 20) + '...' : 'Not set',
         nodeEnv: process.env.NODE_ENV,
-        errorType: error.name,
-        errorStack: error.stack?.split('\n')[0] // First line of stack trace
+        errorType: error.name
       }
     });
   }
