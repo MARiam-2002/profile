@@ -39,6 +39,8 @@ const router = express.Router();
 // @access  Public
 router.get('/', async (req, res) => {
   try {
+    console.log('📋 GET /api/projects - Starting request');
+    
     const { 
       page = 1, 
       limit = 10, 
@@ -48,6 +50,8 @@ router.get('/', async (req, res) => {
       featured,
       search 
     } = req.query;
+
+    console.log('📋 Query parameters:', { page, limit, type, year, tech, featured, search });
 
     // Build query
     const query = { isPublished: true };
@@ -63,6 +67,8 @@ router.get('/', async (req, res) => {
       ];
     }
 
+    console.log('📋 Database query:', query);
+
     // Execute query with pagination
     const projects = await Project.find(query)
       .sort({ createdAt: -1 })
@@ -70,10 +76,14 @@ router.get('/', async (req, res) => {
       .skip((page - 1) * limit)
       .exec();
 
+    console.log('📋 Found projects:', projects.length);
+
     // Get total count
     const total = await Project.countDocuments(query);
 
-    res.json({
+    console.log('📋 Total projects:', total);
+
+    const response = {
       success: true,
       data: projects,
       pagination: {
@@ -82,12 +92,18 @@ router.get('/', async (req, res) => {
         totalItems: total,
         itemsPerPage: parseInt(limit)
       }
-    });
+    };
+
+    console.log('📋 Sending response:', JSON.stringify(response, null, 2));
+    
+    res.json(response);
   } catch (error) {
-    console.error('Get projects error:', error);
+    console.error('❌ Get projects error:', error);
+    console.error('❌ Error stack:', error.stack);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: 'Server error',
+      error: process.env.NODE_ENV === 'production' ? 'Internal server error' : error.message
     });
   }
 });
