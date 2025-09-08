@@ -63,7 +63,7 @@ const projectSchema = new mongoose.Schema({
     },
     category: {
       type: String,
-      enum: ['language', 'framework', 'database', 'tool', 'service', 'other'],
+      enum: ['language', 'framework', 'database', 'tool', 'service', 'technology', 'other'],
       default: 'other'
     },
     version: {
@@ -116,7 +116,7 @@ const projectSchema = new mongoose.Schema({
     },
     category: {
       type: String,
-      enum: ['core', 'ui', 'backend', 'security', 'performance', 'integration', 'other'],
+      enum: ['core', 'ui', 'backend', 'security', 'performance', 'integration', 'social', 'other'],
       default: 'core'
     },
     isHighlighted: {
@@ -225,7 +225,7 @@ const projectSchema = new mongoose.Schema({
       },
       category: {
         type: String,
-        enum: ['technical', 'design', 'performance', 'security', 'integration', 'other'],
+        enum: ['technical', 'design', 'performance', 'security', 'integration', 'ui', 'other'],
         default: 'technical'
       },
       isResolved: {
