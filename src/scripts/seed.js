@@ -904,15 +904,27 @@ const seedExperiences = async () => {
         startDate: new Date('2024-07-01'),
         endDate: new Date('2024-09-30'),
         description: [
-          'Developed and maintained the Estgmam app using Flutter framework',
-          'Implemented Cubit/Bloc state management for complex app state',
-          'Integrated Google Maps API for location-based features',
-          'Collaborated with UI/UX designers to implement pixel-perfect designs',
-          'Optimized app performance and reduced loading times by 30%',
-          'Participated in code reviews and mentored junior developers'
+          'Worked on the Estgmam app, developing features for users, owners, and trip leaders using Cubit and Bloc architecture',
+          'The app also integrates Google Maps for enhanced functionality',
+          'Developed user management features',
+          'Implemented trip leader functionality',
+          'Integrated Google Maps for location services',
+          'Used Cubit and Bloc for state management'
         ],
         tech: ['Flutter', 'Dart', 'Cubit', 'Bloc', 'Google Maps', 'Firebase'],
         location: 'Remote',
+        icon: {
+          url: 'https://res.cloudinary.com/drcmsud1q/image/upload/v1757648432/portfolio/icons/rocket-icon.png',
+          public_id: 'portfolio/icons/rocket-icon'
+        },
+        color: 'from-blue-500 to-cyan-500',
+        type: 'work',
+        achievements: [
+          'Developed user management features',
+          'Implemented trip leader functionality',
+          'Integrated Google Maps for location services',
+          'Used Cubit and Bloc for state management'
+        ],
         isCurrent: false,
         isPublished: true
       },
@@ -922,33 +934,57 @@ const seedExperiences = async () => {
         startDate: new Date('2023-11-01'),
         endDate: new Date('2024-06-30'),
         description: [
-          'Built and maintained multiple Flutter applications using Provider state management',
-          'Implemented MVVM architecture for scalable and maintainable code',
-          'Developed advanced state management solutions for complex app requirements',
-          'Integrated third-party APIs and services for enhanced functionality',
-          'Conducted performance optimization and debugging for production apps',
-          'Worked closely with backend developers for API integration'
+          'Specialized in the Provider pattern and MVVM architecture, with a focus on state management',
+          'My expertise in using Provider has enhanced the robustness and responsiveness of applications',
+          'Implemented Provider pattern for state management',
+          'Applied MVVM architecture principles',
+          'Enhanced app robustness and responsiveness',
+          'Optimized performance and user experience'
         ],
-        tech: ['Flutter', 'Dart', 'Provider', 'MVVM', 'REST APIs', 'Git'],
+        tech: ['Flutter', 'Dart', 'Provider', 'MVVM', 'State Management'],
         location: 'Remote',
+        icon: {
+          url: 'https://res.cloudinary.com/drcmsud1q/image/upload/v1757648432/portfolio/icons/lightning-icon.png',
+          public_id: 'portfolio/icons/lightning-icon'
+        },
+        color: 'from-purple-500 to-pink-500',
+        type: 'work',
+        achievements: [
+          'Implemented Provider pattern for state management',
+          'Applied MVVM architecture principles',
+          'Enhanced app robustness and responsiveness',
+          'Optimized performance and user experience'
+        ],
         isCurrent: false,
         isPublished: true
       },
       {
-        company: 'ITI Training',
-        role: 'Flutter Trainee',
+        company: 'ITI',
+        role: 'Flutter Summer Training',
         startDate: new Date('2023-08-01'),
         endDate: new Date('2023-09-30'),
         description: [
-          'Completed intensive Flutter and Dart training program',
-          'Built a Quiz app as a final project demonstrating learned concepts',
-          'Learned Firebase integration for backend services',
-          'Practiced Git and GitHub for version control',
-          'Participated in team projects and code reviews',
-          'Gained hands-on experience with real-world development practices'
+          'Comprehensive training covering Dart, Flutter, OOP, Clean Coding, Animation, Firebase, Cubit, State Management, API, Git and GitHub',
+          'Developed a quiz app with six categories',
+          'Completed comprehensive Flutter training program',
+          'Developed quiz app with 6 categories (IQ, sports, history, etc.)',
+          'Mastered OOP and Clean Coding principles',
+          'Learned advanced animation techniques'
         ],
-        tech: ['Flutter', 'Dart', 'Firebase', 'Git', 'GitHub'],
-        location: 'Mansoura, Egypt',
+        tech: ['Flutter', 'Dart', 'Firebase', 'Cubit', 'Git', 'GitHub', 'APIs'],
+        location: 'Ismailia',
+        icon: {
+          url: 'https://res.cloudinary.com/drcmsud1q/image/upload/v1757648432/portfolio/icons/graduation-icon.png',
+          public_id: 'portfolio/icons/graduation-icon'
+        },
+        color: 'from-green-500 to-teal-500',
+        type: 'training',
+        achievements: [
+          'Completed comprehensive Flutter training program',
+          'Developed quiz app with 6 categories (IQ, sports, history, etc.)',
+          'Mastered OOP and Clean Coding principles',
+          'Learned advanced animation techniques'
+        ],
         isCurrent: false,
         isPublished: true
       }

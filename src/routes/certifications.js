@@ -2,7 +2,7 @@ import express from 'express';
 import { body, validationResult } from 'express-validator';
 import Certification from '../models/Certification.js';
 import { protect } from '../middleware/auth.js';
-import { uploadImage, processImageUpload } from '../middleware/upload.js';
+import { uploadLogo, processImageUpload } from '../middleware/upload.js';
 import { deleteFromCloudinary } from '../config/cloudinary.js';
 
 const router = express.Router();
@@ -61,7 +61,7 @@ router.get('/:id', async (req, res) => {
 // @desc    Create new certification
 // @route   POST /api/certifications
 // @access  Private
-router.post('/', protect, uploadImage, processImageUpload, [
+router.post('/', protect, uploadLogo, processImageUpload, [
   body('title')
     .trim()
     .isLength({ min: 1, max: 200 })
@@ -142,7 +142,7 @@ router.post('/', protect, uploadImage, processImageUpload, [
 // @desc    Update certification
 // @route   PUT /api/certifications/:id
 // @access  Private
-router.put('/:id', protect, uploadImage, processImageUpload, [
+router.put('/:id', protect, uploadLogo, processImageUpload, [
   body('title')
     .optional()
     .trim()

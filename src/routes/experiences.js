@@ -2,6 +2,7 @@ import express from 'express';
 import { body, validationResult } from 'express-validator';
 import Experience from '../models/Experience.js';
 import { protect } from '../middleware/auth.js';
+import { uploadIcon, processIconUpload } from '../middleware/upload.js';
 
 const router = express.Router();
 
@@ -59,7 +60,7 @@ router.get('/:id', async (req, res) => {
 // @desc    Create new experience
 // @route   POST /api/experiences
 // @access  Private
-router.post('/', protect, [
+router.post('/', protect, uploadIcon, processIconUpload, [
   body('company')
     .trim()
     .isLength({ min: 1, max: 100 })
@@ -87,6 +88,19 @@ router.post('/', protect, [
     .trim()
     .isLength({ max: 100 })
     .withMessage('Location cannot exceed 100 characters'),
+  body('color')
+    .optional()
+    .trim()
+    .isLength({ max: 50 })
+    .withMessage('Color cannot exceed 50 characters'),
+  body('type')
+    .optional()
+    .isIn(['work', 'training', 'education', 'internship'])
+    .withMessage('Type must be one of: work, training, education, internship'),
+  body('achievements')
+    .optional()
+    .isArray()
+    .withMessage('Achievements must be an array'),
   body('isCurrent')
     .optional()
     .isBoolean()
@@ -110,8 +124,20 @@ router.post('/', protect, [
       description,
       tech,
       location,
+      color,
+      type,
+      achievements,
       isCurrent
     } = req.body;
+
+    // Prepare icon data
+    let iconData = null;
+    if (req.iconResult) {
+      iconData = {
+        url: req.iconResult.secure_url,
+        public_id: req.iconResult.public_id
+      };
+    }
 
     // Create experience
     const experience = await Experience.create({
@@ -119,10 +145,14 @@ router.post('/', protect, [
       role,
       startDate: new Date(startDate),
       endDate: endDate ? new Date(endDate) : null,
-      description: JSON.parse(description),
-      tech: tech ? JSON.parse(tech) : [],
+      description: Array.isArray(description) ? description : JSON.parse(description),
+      tech: tech ? (Array.isArray(tech) ? tech : JSON.parse(tech)) : [],
       location: location || '',
-      isCurrent: isCurrent === 'true'
+      icon: iconData,
+      color: color || 'from-blue-500 to-cyan-500',
+      type: type || 'work',
+      achievements: achievements ? (Array.isArray(achievements) ? achievements : JSON.parse(achievements)) : [],
+      isCurrent: isCurrent === 'true' || isCurrent === true
     });
 
     res.status(201).json({
@@ -141,7 +171,7 @@ router.post('/', protect, [
 // @desc    Update experience
 // @route   PUT /api/experiences/:id
 // @access  Private
-router.put('/:id', protect, [
+router.put('/:id', protect, uploadIcon, processIconUpload, [
   body('company')
     .optional()
     .trim()
@@ -173,6 +203,19 @@ router.put('/:id', protect, [
     .trim()
     .isLength({ max: 100 })
     .withMessage('Location cannot exceed 100 characters'),
+  body('color')
+    .optional()
+    .trim()
+    .isLength({ max: 50 })
+    .withMessage('Color cannot exceed 50 characters'),
+  body('type')
+    .optional()
+    .isIn(['work', 'training', 'education', 'internship'])
+    .withMessage('Type must be one of: work, training, education, internship'),
+  body('achievements')
+    .optional()
+    .isArray()
+    .withMessage('Achievements must be an array'),
   body('isCurrent')
     .optional()
     .isBoolean()
@@ -199,12 +242,33 @@ router.put('/:id', protect, [
     // Prepare update data
     const updateData = { ...req.body };
     
+    // Handle icon upload
+    if (req.iconResult) {
+      updateData.icon = {
+        url: req.iconResult.secure_url,
+        public_id: req.iconResult.public_id
+      };
+    }
+    
     // Handle parsed JSON fields
-    if (req.body.description) updateData.description = JSON.parse(req.body.description);
-    if (req.body.tech) updateData.tech = JSON.parse(req.body.tech);
+    if (req.body.description) {
+      updateData.description = Array.isArray(req.body.description) 
+        ? req.body.description 
+        : JSON.parse(req.body.description);
+    }
+    if (req.body.tech) {
+      updateData.tech = Array.isArray(req.body.tech) 
+        ? req.body.tech 
+        : JSON.parse(req.body.tech);
+    }
+    if (req.body.achievements) {
+      updateData.achievements = Array.isArray(req.body.achievements) 
+        ? req.body.achievements 
+        : JSON.parse(req.body.achievements);
+    }
     if (req.body.startDate) updateData.startDate = new Date(req.body.startDate);
     if (req.body.endDate) updateData.endDate = new Date(req.body.endDate);
-    if (req.body.isCurrent !== undefined) updateData.isCurrent = req.body.isCurrent === 'true';
+    if (req.body.isCurrent !== undefined) updateData.isCurrent = req.body.isCurrent === 'true' || req.body.isCurrent === true;
 
     // Update experience
     const updatedExperience = await Experience.findByIdAndUpdate(

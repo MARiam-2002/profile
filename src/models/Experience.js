@@ -37,6 +37,33 @@ const experienceSchema = new mongoose.Schema({
     trim: true,
     maxlength: [100, 'Location cannot be more than 100 characters']
   },
+  // New fields for icons and styling
+  icon: {
+    url: {
+      type: String,
+      trim: true
+    },
+    public_id: {
+      type: String,
+      trim: true
+    }
+  },
+  color: {
+    type: String,
+    trim: true,
+    maxlength: [50, 'Color cannot be more than 50 characters'],
+    default: 'from-blue-500 to-cyan-500'
+  },
+  type: {
+    type: String,
+    enum: ['work', 'training', 'education', 'internship'],
+    default: 'work'
+  },
+  achievements: [{
+    type: String,
+    trim: true,
+    maxlength: [200, 'Achievement cannot be more than 200 characters']
+  }],
   isCurrent: {
     type: Boolean,
     default: false
