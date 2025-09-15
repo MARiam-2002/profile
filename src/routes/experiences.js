@@ -7,24 +7,115 @@ import multer from 'multer';
 
 const router = express.Router();
 
-// Custom body parser for experiences routes
-const parseBody = (req, res, next) => {
-  const contentType = req.headers['content-type'] || '';
-  
-  if (contentType.includes('application/json')) {
-    // Parse JSON requests
-    return express.json({ limit: '10mb' })(req, res, next);
-  } else if (contentType.includes('application/x-www-form-urlencoded')) {
-    // Parse URL encoded requests
-    return express.urlencoded({ extended: true, limit: '10mb' })(req, res, next);
-  } else if (contentType.includes('multipart/form-data')) {
-    // Skip parsing for form-data - multer will handle it
-    return next();
-  } else {
-    // Default to JSON parsing
-    return express.json({ limit: '10mb' })(req, res, next);
+// Simple update route without complex middleware
+router.put('/simple/:id', protect, async (req, res) => {
+  try {
+    const experience = await Experience.findById(req.params.id);
+    if (!experience) {
+      return res.status(404).json({
+        success: false,
+        message: 'Experience not found'
+      });
+    }
+
+    // Simple update with req.body
+    const updatedExperience = await Experience.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    res.json({
+      success: true,
+      data: updatedExperience
+    });
+  } catch (error) {
+    console.error('Simple update experience error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
   }
-};
+});
+
+// Form data update route with icon upload
+router.put('/form/:id', protect, uploadIcon, processIconUpload, async (req, res) => {
+  try {
+    const experience = await Experience.findById(req.params.id);
+    if (!experience) {
+      return res.status(404).json({
+        success: false,
+        message: 'Experience not found'
+      });
+    }
+
+    // Prepare update data
+    const updateData = { ...req.body };
+    
+    // Handle icon upload
+    if (req.iconResult) {
+      updateData.icon = {
+        url: req.iconResult.secure_url,
+        public_id: req.iconResult.public_id
+      };
+    }
+    
+    // Handle parsed JSON fields for form data
+    if (req.body.description) {
+      try {
+        updateData.description = Array.isArray(req.body.description) 
+          ? req.body.description 
+          : JSON.parse(req.body.description);
+      } catch (error) {
+        console.error('Error parsing description:', error);
+        updateData.description = [req.body.description];
+      }
+    }
+    if (req.body.tech) {
+      try {
+        updateData.tech = Array.isArray(req.body.tech) 
+          ? req.body.tech 
+          : JSON.parse(req.body.tech);
+      } catch (error) {
+        console.error('Error parsing tech:', error);
+        updateData.tech = [req.body.tech];
+      }
+    }
+    if (req.body.achievements) {
+      try {
+        updateData.achievements = Array.isArray(req.body.achievements) 
+          ? req.body.achievements 
+          : JSON.parse(req.body.achievements);
+      } catch (error) {
+        console.error('Error parsing achievements:', error);
+        updateData.achievements = [req.body.achievements];
+      }
+    }
+    if (req.body.startDate) updateData.startDate = new Date(req.body.startDate);
+    if (req.body.endDate) updateData.endDate = new Date(req.body.endDate);
+    if (req.body.isCurrent !== undefined) updateData.isCurrent = req.body.isCurrent === 'true' || req.body.isCurrent === true;
+
+    // Update experience
+    const updatedExperience = await Experience.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    res.json({
+      success: true,
+      data: updatedExperience
+    });
+  } catch (error) {
+    console.error('Form update experience error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+});
 
 
 // @desc    Get all experiences
@@ -81,7 +172,7 @@ router.get('/:id', async (req, res) => {
 // @desc    Create new experience
 // @route   POST /api/experiences
 // @access  Private
-router.post('/', parseBody, protect, uploadIcon, processIconUpload, [
+router.post('/', protect, uploadIcon, processIconUpload, [
   body('company')
     .trim()
     .isLength({ min: 1, max: 100 })
@@ -192,7 +283,7 @@ router.post('/', parseBody, protect, uploadIcon, processIconUpload, [
 // @desc    Update experience
 // @route   PUT /api/experiences/:id
 // @access  Private
-router.put('/:id', parseBody, protect, uploadIcon, processIconUpload, [
+router.put('/:id', protect, uploadIcon, processIconUpload, [
   body('company')
     .optional()
     .trim()
