@@ -42,6 +42,13 @@ router.put('/simple/:id', protect, async (req, res) => {
 // Form data update route with icon upload
 router.put('/form/:id', protect, uploadIcon, processIconUpload, async (req, res) => {
   try {
+    console.log('🔍 Form data update request:', {
+      id: req.params.id,
+      body: req.body,
+      hasFile: !!req.file,
+      hasIconResult: !!req.iconResult
+    });
+
     const experience = await Experience.findById(req.params.id);
     if (!experience) {
       return res.status(404).json({
@@ -55,6 +62,7 @@ router.put('/form/:id', protect, uploadIcon, processIconUpload, async (req, res)
     
     // Handle icon upload
     if (req.iconResult) {
+      console.log('📸 Icon uploaded:', req.iconResult);
       updateData.icon = {
         url: req.iconResult.secure_url,
         public_id: req.iconResult.public_id
