@@ -145,13 +145,13 @@ router.post('/', protect, uploadIcon, processIconUpload, [
       role,
       startDate: new Date(startDate),
       endDate: endDate ? new Date(endDate) : null,
-      description: Array.isArray(description) ? description : JSON.parse(description),
-      tech: tech ? (Array.isArray(tech) ? tech : JSON.parse(tech)) : [],
+      description: Array.isArray(description) ? description : (typeof description === 'string' ? JSON.parse(description) : [description]),
+      tech: tech ? (Array.isArray(tech) ? tech : (typeof tech === 'string' ? JSON.parse(tech) : [tech])) : [],
       location: location || '',
       icon: iconData,
       color: color || 'from-blue-500 to-cyan-500',
       type: type || 'work',
-      achievements: achievements ? (Array.isArray(achievements) ? achievements : JSON.parse(achievements)) : [],
+      achievements: achievements ? (Array.isArray(achievements) ? achievements : (typeof achievements === 'string' ? JSON.parse(achievements) : [achievements])) : [],
       isCurrent: isCurrent === 'true' || isCurrent === true
     });
 
@@ -252,19 +252,34 @@ router.put('/:id', protect, uploadIcon, processIconUpload, [
     
     // Handle parsed JSON fields
     if (req.body.description) {
-      updateData.description = Array.isArray(req.body.description) 
-        ? req.body.description 
-        : JSON.parse(req.body.description);
+      try {
+        updateData.description = Array.isArray(req.body.description) 
+          ? req.body.description 
+          : JSON.parse(req.body.description);
+      } catch (error) {
+        console.error('Error parsing description:', error);
+        updateData.description = [req.body.description];
+      }
     }
     if (req.body.tech) {
-      updateData.tech = Array.isArray(req.body.tech) 
-        ? req.body.tech 
-        : JSON.parse(req.body.tech);
+      try {
+        updateData.tech = Array.isArray(req.body.tech) 
+          ? req.body.tech 
+          : JSON.parse(req.body.tech);
+      } catch (error) {
+        console.error('Error parsing tech:', error);
+        updateData.tech = [req.body.tech];
+      }
     }
     if (req.body.achievements) {
-      updateData.achievements = Array.isArray(req.body.achievements) 
-        ? req.body.achievements 
-        : JSON.parse(req.body.achievements);
+      try {
+        updateData.achievements = Array.isArray(req.body.achievements) 
+          ? req.body.achievements 
+          : JSON.parse(req.body.achievements);
+      } catch (error) {
+        console.error('Error parsing achievements:', error);
+        updateData.achievements = [req.body.achievements];
+      }
     }
     if (req.body.startDate) updateData.startDate = new Date(req.body.startDate);
     if (req.body.endDate) updateData.endDate = new Date(req.body.endDate);
