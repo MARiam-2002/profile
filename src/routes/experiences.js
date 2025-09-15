@@ -3,8 +3,19 @@ import { body, validationResult } from 'express-validator';
 import Experience from '../models/Experience.js';
 import { protect } from '../middleware/auth.js';
 import { uploadIcon, processIconUpload } from '../middleware/upload.js';
+import multer from 'multer';
 
 const router = express.Router();
+
+// Custom middleware to handle form-data parsing
+const handleFormData = (req, res, next) => {
+  if (req.headers['content-type']?.includes('multipart/form-data')) {
+    // For form-data requests, we need to handle the body differently
+    // The multer middleware will handle the parsing
+    return next();
+  }
+  next();
+};
 
 // @desc    Get all experiences
 // @route   GET /api/experiences
@@ -60,7 +71,7 @@ router.get('/:id', async (req, res) => {
 // @desc    Create new experience
 // @route   POST /api/experiences
 // @access  Private
-router.post('/', protect, uploadIcon, processIconUpload, [
+router.post('/', handleFormData, protect, uploadIcon, processIconUpload, [
   body('company')
     .trim()
     .isLength({ min: 1, max: 100 })
@@ -171,7 +182,7 @@ router.post('/', protect, uploadIcon, processIconUpload, [
 // @desc    Update experience
 // @route   PUT /api/experiences/:id
 // @access  Private
-router.put('/:id', protect, uploadIcon, processIconUpload, [
+router.put('/:id', handleFormData, protect, uploadIcon, processIconUpload, [
   body('company')
     .optional()
     .trim()
