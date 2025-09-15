@@ -7,22 +7,22 @@ import multer from 'multer';
 
 const router = express.Router();
 
-// Custom JSON parser for non-form-data requests
-const parseJSON = (req, res, next) => {
+// Custom body parser for experiences routes
+const parseBody = (req, res, next) => {
   const contentType = req.headers['content-type'] || '';
   
   if (contentType.includes('application/json')) {
     // Parse JSON requests
     return express.json({ limit: '10mb' })(req, res, next);
+  } else if (contentType.includes('application/x-www-form-urlencoded')) {
+    // Parse URL encoded requests
+    return express.urlencoded({ extended: true, limit: '10mb' })(req, res, next);
   } else if (contentType.includes('multipart/form-data')) {
-    // Skip JSON parsing for form-data - multer will handle it
+    // Skip parsing for form-data - multer will handle it
     return next();
   } else {
-    // For other content types, try to parse as JSON if body looks like JSON
-    if (req.body && typeof req.body === 'string' && req.body.startsWith('{')) {
-      return express.json({ limit: '10mb' })(req, res, next);
-    }
-    return next();
+    // Default to JSON parsing
+    return express.json({ limit: '10mb' })(req, res, next);
   }
 };
 
@@ -81,7 +81,7 @@ router.get('/:id', async (req, res) => {
 // @desc    Create new experience
 // @route   POST /api/experiences
 // @access  Private
-router.post('/', parseJSON, protect, uploadIcon, processIconUpload, [
+router.post('/', parseBody, protect, uploadIcon, processIconUpload, [
   body('company')
     .trim()
     .isLength({ min: 1, max: 100 })
@@ -192,7 +192,7 @@ router.post('/', parseJSON, protect, uploadIcon, processIconUpload, [
 // @desc    Update experience
 // @route   PUT /api/experiences/:id
 // @access  Private
-router.put('/:id', parseJSON, protect, uploadIcon, processIconUpload, [
+router.put('/:id', parseBody, protect, uploadIcon, processIconUpload, [
   body('company')
     .optional()
     .trim()
