@@ -52,17 +52,18 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Custom middleware to handle form-data before JSON parsing
+// Body parsing middleware
 app.use((req, res, next) => {
-  if (req.headers['content-type']?.includes('multipart/form-data')) {
-    // Skip JSON parsing for form-data requests
+  // Skip JSON parsing for experiences routes with form-data
+  if (req.path.startsWith('/api/experiences') && 
+      (req.method === 'POST' || req.method === 'PUT') &&
+      req.headers['content-type']?.includes('multipart/form-data')) {
     return next();
   }
-  next();
+  // Apply JSON parsing for all other routes
+  express.json({ limit: '10mb' })(req, res, next);
 });
 
-// Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Static files

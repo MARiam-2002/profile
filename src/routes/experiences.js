@@ -7,6 +7,14 @@ import multer from 'multer';
 
 const router = express.Router();
 
+// Custom JSON parser for non-form-data requests
+const parseJSON = (req, res, next) => {
+  if (!req.headers['content-type']?.includes('multipart/form-data')) {
+    return express.json({ limit: '10mb' })(req, res, next);
+  }
+  next();
+};
+
 
 // @desc    Get all experiences
 // @route   GET /api/experiences
@@ -62,7 +70,7 @@ router.get('/:id', async (req, res) => {
 // @desc    Create new experience
 // @route   POST /api/experiences
 // @access  Private
-router.post('/', protect, uploadIcon, processIconUpload, [
+router.post('/', parseJSON, protect, uploadIcon, processIconUpload, [
   body('company')
     .trim()
     .isLength({ min: 1, max: 100 })
@@ -173,7 +181,7 @@ router.post('/', protect, uploadIcon, processIconUpload, [
 // @desc    Update experience
 // @route   PUT /api/experiences/:id
 // @access  Private
-router.put('/:id', protect, uploadIcon, processIconUpload, [
+router.put('/:id', parseJSON, protect, uploadIcon, processIconUpload, [
   body('company')
     .optional()
     .trim()
