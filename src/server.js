@@ -52,24 +52,9 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Body parsing middleware - skip ALL parsing for experiences routes
-app.use((req, res, next) => {
-  // Skip all body parsing for experiences routes - they will handle it themselves
-  if (req.path.startsWith('/api/experiences') && (req.method === 'POST' || req.method === 'PUT')) {
-    return next();
-  }
-  // Apply JSON parsing for all other routes
-  express.json({ limit: '10mb' })(req, res, next);
-});
-
-// URL encoded parsing - skip for experiences routes
-app.use((req, res, next) => {
-  // Skip urlencoded parsing for experiences routes
-  if (req.path.startsWith('/api/experiences') && (req.method === 'POST' || req.method === 'PUT')) {
-    return next();
-  }
-  express.urlencoded({ extended: true, limit: '10mb' })(req, res, next);
-});
+// Body parsing middleware - standard setup
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Static files
 app.use('/uploads', express.static('uploads'));

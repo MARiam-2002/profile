@@ -1,109 +1,370 @@
-import mongoose from 'mongoose';
+import express from 'express';
+import { body, validationResult } from 'express-validator';
+import Experience from '../models/Experience.js';
+import { protect } from '../middleware/auth.js';
+import { uploadIcon, processIconUpload } from '../middleware/upload.js';
+import multer from 'multer';
 
-const experienceSchema = new mongoose.Schema({
-  company: {
-    type: String,
-    required: [true, 'Company name is required'],
-    trim: true,
-    maxlength: [100, 'Company name cannot be more than 100 characters']
-  },
-  role: {
-    type: String,
-    required: [true, 'Job role is required'],
-    trim: true,
-    maxlength: [100, 'Role cannot be more than 100 characters']
-  },
-  startDate: {
-    type: Date,
-    required: [true, 'Start date is required']
-  },
-  endDate: {
-    type: Date,
-    default: null // null means current position
-  },
-  description: [{
-    type: String,
-    required: [true, 'At least one description point is required'],
-    trim: true,
-    maxlength: [300, 'Description point cannot be more than 300 characters']
-  }],
-  tech: [{
-    type: String,
-    trim: true,
-    maxlength: [50, 'Technology name cannot be more than 50 characters']
-  }],
-  location: {
-    type: String,
-    trim: true,
-    maxlength: [100, 'Location cannot be more than 100 characters']
-  },
-  // New fields for icons and styling
-  icon: {
-    url: {
-      type: String,
-      trim: true
-    },
-    public_id: {
-      type: String,
-      trim: true
+const router = express.Router();
+
+// Simple update route without complex middleware
+router.put('/simple/:id', protect, async (req, res) => {
+  try {
+    const experience = await Experience.findById(req.params.id);
+    if (!experience) {
+      return res.status(404).json({
+        success: false,
+        message: 'Experience not found'
+      });
     }
-  },
-  color: {
-    type: String,
-    trim: true,
-    maxlength: [50, 'Color cannot be more than 50 characters'],
-    default: 'from-blue-500 to-cyan-500'
-  },
-  type: {
-    type: String,
-    enum: ['work', 'training', 'education', 'internship'],
-    default: 'work'
-  },
-  achievements: [{
-    type: String,
-    trim: true,
-    maxlength: [200, 'Achievement cannot be more than 200 characters']
-  }],
-  isCurrent: {
-    type: Boolean,
-    default: false
-  },
-  isPublished: {
-    type: Boolean,
-    default: true
-  }
-}, {
-  timestamps: true
-});
 
-// Virtual for duration
-experienceSchema.virtual('duration').get(function() {
-  const start = this.startDate;
-  const end = this.endDate || new Date();
-  
-  const diffTime = Math.abs(end - start);
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  const diffMonths = Math.floor(diffDays / 30);
-  const diffYears = Math.floor(diffMonths / 12);
-  
-  if (diffYears > 0) {
-    const remainingMonths = diffMonths % 12;
-    return `${diffYears} year${diffYears > 1 ? 's' : ''}${remainingMonths > 0 ? ` ${remainingMonths} month${remainingMonths > 1 ? 's' : ''}` : ''}`;
-  } else if (diffMonths > 0) {
-    return `${diffMonths} month${diffMonths > 1 ? 's' : ''}`;
-  } else {
-    return `${diffDays} day${diffDays > 1 ? 's' : ''}`;
+    // Simple update with req.body
+    const updatedExperience = await Experience.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    res.json({
+      success: true,
+      data: updatedExperience
+    });
+  } catch (error) {
+    console.error('Simple update experience error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
   }
 });
 
-// Ensure virtual fields are serialized
-experienceSchema.set('toJSON', { virtuals: true });
 
-// Index for better query performance
-experienceSchema.index({ startDate: -1 });
-experienceSchema.index({ isCurrent: 1 });
-experienceSchema.index({ isPublished: 1 });
+// @desc    Get all experiences
+// @route   GET /api/experiences
+// @access  Public
+router.get('/', async (req, res) => {
+  try {
+    const experiences = await Experience.find({ isPublished: true })
+      .sort({ startDate: -1 });
 
-const Experience = mongoose.model('Experience', experienceSchema);
+    res.json({
+      success: true,
+      data: experiences
+    });
+  } catch (error) {
+    console.error('Get experiences error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+});
 
-export default Experience;
+// @desc    Get experience by ID
+// @route   GET /api/experiences/:id
+// @access  Public
+router.get('/:id', async (req, res) => {
+  try {
+    const experience = await Experience.findOne({ 
+      _id: req.params.id, 
+      isPublished: true 
+    });
+
+    if (!experience) {
+      return res.status(404).json({
+        success: false,
+        message: 'Experience not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: experience
+    });
+  } catch (error) {
+    console.error('Get experience error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+});
+
+// @desc    Create new experience
+// @route   POST /api/experiences
+// @access  Private
+router.post('/', protect, uploadIcon, processIconUpload, [
+  body('company')
+    .trim()
+    .isLength({ min: 1, max: 100 })
+    .withMessage('Company name is required and cannot exceed 100 characters'),
+  body('role')
+    .trim()
+    .isLength({ min: 1, max: 100 })
+    .withMessage('Role is required and cannot exceed 100 characters'),
+  body('startDate')
+    .isISO8601()
+    .withMessage('Start date must be a valid date'),
+  body('endDate')
+    .optional()
+    .isISO8601()
+    .withMessage('End date must be a valid date'),
+  body('description')
+    .isArray({ min: 1 })
+    .withMessage('At least one description point is required'),
+  body('tech')
+    .optional()
+    .isArray()
+    .withMessage('Tech must be an array'),
+  body('location')
+    .optional()
+    .trim()
+    .isLength({ max: 100 })
+    .withMessage('Location cannot exceed 100 characters'),
+  body('color')
+    .optional()
+    .trim()
+    .isLength({ max: 50 })
+    .withMessage('Color cannot exceed 50 characters'),
+  body('type')
+    .optional()
+    .isIn(['work', 'training', 'education', 'internship'])
+    .withMessage('Type must be one of: work, training, education, internship'),
+  body('achievements')
+    .optional()
+    .isArray()
+    .withMessage('Achievements must be an array'),
+  body('isCurrent')
+    .optional()
+    .isBoolean()
+    .withMessage('isCurrent must be a boolean')
+], async (req, res) => {
+  try {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        errors: errors.array()
+      });
+    }
+
+    const {
+      company,
+      role,
+      startDate,
+      endDate,
+      description,
+      tech,
+      location,
+      color,
+      type,
+      achievements,
+      isCurrent
+    } = req.body;
+
+    // Prepare icon data
+    let iconData = null;
+    if (req.iconResult) {
+      iconData = {
+        url: req.iconResult.secure_url,
+        public_id: req.iconResult.public_id
+      };
+    }
+
+    // Create experience
+    const experience = await Experience.create({
+      company,
+      role,
+      startDate: new Date(startDate),
+      endDate: endDate ? new Date(endDate) : null,
+      description: Array.isArray(description) ? description : (typeof description === 'string' ? JSON.parse(description) : [description]),
+      tech: tech ? (Array.isArray(tech) ? tech : (typeof tech === 'string' ? JSON.parse(tech) : [tech])) : [],
+      location: location || '',
+      icon: iconData,
+      color: color || 'from-blue-500 to-cyan-500',
+      type: type || 'work',
+      achievements: achievements ? (Array.isArray(achievements) ? achievements : (typeof achievements === 'string' ? JSON.parse(achievements) : [achievements])) : [],
+      isCurrent: isCurrent === 'true' || isCurrent === true
+    });
+
+    res.status(201).json({
+      success: true,
+      data: experience
+    });
+  } catch (error) {
+    console.error('Create experience error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+});
+
+// @desc    Update experience
+// @route   PUT /api/experiences/:id
+// @access  Private
+router.put('/:id', protect, uploadIcon, processIconUpload, [
+  body('company')
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 100 })
+    .withMessage('Company name cannot exceed 100 characters'),
+  body('role')
+    .optional()
+    .trim()
+    .isLength({ min: 1, max: 100 })
+    .withMessage('Role cannot exceed 100 characters'),
+  body('startDate')
+    .optional()
+    .isISO8601()
+    .withMessage('Start date must be a valid date'),
+  body('endDate')
+    .optional()
+    .isISO8601()
+    .withMessage('End date must be a valid date'),
+  body('description')
+    .optional()
+    .isArray({ min: 1 })
+    .withMessage('At least one description point is required'),
+  body('tech')
+    .optional()
+    .isArray()
+    .withMessage('Tech must be an array'),
+  body('location')
+    .optional()
+    .trim()
+    .isLength({ max: 100 })
+    .withMessage('Location cannot exceed 100 characters'),
+  body('color')
+    .optional()
+    .trim()
+    .isLength({ max: 50 })
+    .withMessage('Color cannot exceed 50 characters'),
+  body('type')
+    .optional()
+    .isIn(['work', 'training', 'education', 'internship'])
+    .withMessage('Type must be one of: work, training, education, internship'),
+  body('achievements')
+    .optional()
+    .isArray()
+    .withMessage('Achievements must be an array'),
+  body('isCurrent')
+    .optional()
+    .isBoolean()
+    .withMessage('isCurrent must be a boolean')
+], async (req, res) => {
+  try {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        errors: errors.array()
+      });
+    }
+
+    const experience = await Experience.findById(req.params.id);
+    if (!experience) {
+      return res.status(404).json({
+        success: false,
+        message: 'Experience not found'
+      });
+    }
+
+    // Prepare update data
+    const updateData = { ...req.body };
+    
+    // Handle icon upload
+    if (req.iconResult) {
+      updateData.icon = {
+        url: req.iconResult.secure_url,
+        public_id: req.iconResult.public_id
+      };
+    }
+    
+    // Handle parsed JSON fields
+    if (req.body.description) {
+      try {
+        updateData.description = Array.isArray(req.body.description) 
+          ? req.body.description 
+          : JSON.parse(req.body.description);
+      } catch (error) {
+        console.error('Error parsing description:', error);
+        updateData.description = [req.body.description];
+      }
+    }
+    if (req.body.tech) {
+      try {
+        updateData.tech = Array.isArray(req.body.tech) 
+          ? req.body.tech 
+          : JSON.parse(req.body.tech);
+      } catch (error) {
+        console.error('Error parsing tech:', error);
+        updateData.tech = [req.body.tech];
+      }
+    }
+    if (req.body.achievements) {
+      try {
+        updateData.achievements = Array.isArray(req.body.achievements) 
+          ? req.body.achievements 
+          : JSON.parse(req.body.achievements);
+      } catch (error) {
+        console.error('Error parsing achievements:', error);
+        updateData.achievements = [req.body.achievements];
+      }
+    }
+    if (req.body.startDate) updateData.startDate = new Date(req.body.startDate);
+    if (req.body.endDate) updateData.endDate = new Date(req.body.endDate);
+    if (req.body.isCurrent !== undefined) updateData.isCurrent = req.body.isCurrent === 'true' || req.body.isCurrent === true;
+
+    // Update experience
+    const updatedExperience = await Experience.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    res.json({
+      success: true,
+      data: updatedExperience
+    });
+  } catch (error) {
+    console.error('Update experience error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+});
+
+// @desc    Delete experience
+// @route   DELETE /api/experiences/:id
+// @access  Private
+router.delete('/:id', protect, async (req, res) => {
+  try {
+    const experience = await Experience.findById(req.params.id);
+    if (!experience) {
+      return res.status(404).json({
+        success: false,
+        message: 'Experience not found'
+      });
+    }
+
+    await Experience.findByIdAndDelete(req.params.id);
+
+    res.json({
+      success: true,
+      message: 'Experience deleted successfully'
+    });
+  } catch (error) {
+    console.error('Delete experience error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+});
+
+export default router;
