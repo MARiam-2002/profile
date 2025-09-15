@@ -105,7 +105,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/experiences', experienceRoutes);
-app.use('/api/experiences', experienceFormRoutes); // Form data routes
+app.use('/api/experiences/form', experienceFormRoutes); // Form data routes
 app.use('/api/skills', skillRoutes);
 app.use('/api/certifications', certificationRoutes);
 app.use('/api/socials', socialRoutes);
