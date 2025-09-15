@@ -52,12 +52,10 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// Body parsing middleware
+// Body parsing middleware - only for non-experiences routes
 app.use((req, res, next) => {
-  // Skip JSON parsing for experiences routes with form-data
-  if (req.path.startsWith('/api/experiences') && 
-      (req.method === 'POST' || req.method === 'PUT') &&
-      req.headers['content-type']?.includes('multipart/form-data')) {
+  // Skip all body parsing for experiences routes - they will handle it themselves
+  if (req.path.startsWith('/api/experiences') && (req.method === 'POST' || req.method === 'PUT')) {
     return next();
   }
   // Apply JSON parsing for all other routes

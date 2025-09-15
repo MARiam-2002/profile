@@ -9,10 +9,21 @@ const router = express.Router();
 
 // Custom JSON parser for non-form-data requests
 const parseJSON = (req, res, next) => {
-  if (!req.headers['content-type']?.includes('multipart/form-data')) {
+  const contentType = req.headers['content-type'] || '';
+  
+  if (contentType.includes('application/json')) {
+    // Parse JSON requests
     return express.json({ limit: '10mb' })(req, res, next);
+  } else if (contentType.includes('multipart/form-data')) {
+    // Skip JSON parsing for form-data - multer will handle it
+    return next();
+  } else {
+    // For other content types, try to parse as JSON if body looks like JSON
+    if (req.body && typeof req.body === 'string' && req.body.startsWith('{')) {
+      return express.json({ limit: '10mb' })(req, res, next);
+    }
+    return next();
   }
-  next();
 };
 
 
