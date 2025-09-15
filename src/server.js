@@ -11,7 +11,6 @@ import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import projectRoutes from './routes/projects.js';
 import experienceRoutes from './routes/experiences.js';
-import experienceFormRoutes from './routes/experiencesForm.js';
 import skillRoutes from './routes/skills.js';
 import certificationRoutes from './routes/certifications.js';
 import socialRoutes from './routes/socials.js';
@@ -105,7 +104,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/experiences', experienceRoutes);
-app.use('/api/experiences/form', experienceFormRoutes); // Form data routes
 app.use('/api/skills', skillRoutes);
 app.use('/api/certifications', certificationRoutes);
 app.use('/api/socials', socialRoutes);
