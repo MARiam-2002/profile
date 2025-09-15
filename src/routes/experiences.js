@@ -7,15 +7,6 @@ import multer from 'multer';
 
 const router = express.Router();
 
-// Custom middleware to handle form-data parsing
-const handleFormData = (req, res, next) => {
-  if (req.headers['content-type']?.includes('multipart/form-data')) {
-    // For form-data requests, we need to handle the body differently
-    // The multer middleware will handle the parsing
-    return next();
-  }
-  next();
-};
 
 // @desc    Get all experiences
 // @route   GET /api/experiences
@@ -71,7 +62,7 @@ router.get('/:id', async (req, res) => {
 // @desc    Create new experience
 // @route   POST /api/experiences
 // @access  Private
-router.post('/', handleFormData, protect, uploadIcon, processIconUpload, [
+router.post('/', protect, uploadIcon, processIconUpload, [
   body('company')
     .trim()
     .isLength({ min: 1, max: 100 })
@@ -182,7 +173,7 @@ router.post('/', handleFormData, protect, uploadIcon, processIconUpload, [
 // @desc    Update experience
 // @route   PUT /api/experiences/:id
 // @access  Private
-router.put('/:id', handleFormData, protect, uploadIcon, processIconUpload, [
+router.put('/:id', protect, uploadIcon, processIconUpload, [
   body('company')
     .optional()
     .trim()

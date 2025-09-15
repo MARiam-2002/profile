@@ -52,6 +52,15 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
+// Custom middleware to handle form-data before JSON parsing
+app.use((req, res, next) => {
+  if (req.headers['content-type']?.includes('multipart/form-data')) {
+    // Skip JSON parsing for form-data requests
+    return next();
+  }
+  next();
+});
+
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
